@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\marco\\Desktop\\Marco\\Projeto Criado AkariBeauty\\AkariBeauty\\AkariBeauty.csproj": {}
+    "C:\\Users\\marco\\Desktop\\Marco\\AkariBeauty-Backend\\AkariBeauty\\AkariBeauty.csproj": {}
   },
   "projects": {
-    "C:\\Users\\marco\\Desktop\\Marco\\Projeto Criado AkariBeauty\\AkariBeauty\\AkariBeauty.csproj": {
+    "C:\\Users\\marco\\Desktop\\Marco\\AkariBeauty-Backend\\AkariBeauty\\AkariBeauty.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\marco\\Desktop\\Marco\\Projeto Criado AkariBeauty\\AkariBeauty\\AkariBeauty.csproj",
+        "projectUniqueName": "C:\\Users\\marco\\Desktop\\Marco\\AkariBeauty-Backend\\AkariBeauty\\AkariBeauty.csproj",
         "projectName": "AkariBeauty",
-        "projectPath": "C:\\Users\\marco\\Desktop\\Marco\\Projeto Criado AkariBeauty\\AkariBeauty\\AkariBeauty.csproj",
+        "projectPath": "C:\\Users\\marco\\Desktop\\Marco\\AkariBeauty-Backend\\AkariBeauty\\AkariBeauty.csproj",
         "packagesPath": "C:\\Users\\marco\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\marco\\Desktop\\Marco\\Projeto Criado AkariBeauty\\AkariBeauty\\obj\\",
+        "outputPath": "C:\\Users\\marco\\Desktop\\Marco\\AkariBeauty-Backend\\AkariBeauty\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\marco\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -45,9 +45,45 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "AutoMapper": {
+              "target": "Package",
+              "version": "[14.0.0, )"
+            },
+            "EntityFramework": {
+              "target": "Package",
+              "version": "[6.5.1, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.3, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.3, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.3, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[9.0.4, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.4.0, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[8.7.0, )"
             }
           },
           "imports": [

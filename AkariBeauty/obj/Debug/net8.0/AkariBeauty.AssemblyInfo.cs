@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AkariBeauty")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+89de3a759e19098624458a169ed30e3c868202e6")]
 [assembly: System.Reflection.AssemblyProductAttribute("AkariBeauty")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AkariBeauty")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
