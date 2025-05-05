@@ -86,8 +86,17 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // Injeção de Dependências
 builder.Services.AddScoped<IServicoRepository, ServicoRepository>();
-builder.Services.AddScoped<IServicoService, ServicoService>();
+builder.Services.AddScoped<IAgendamentoRepository, AgendamentoRepository>();
+builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
+builder.Services.AddScoped<IEmpresaRepository, EmpresaRepository>();
+builder.Services.AddScoped<IFuncionarioRepository, FuncionarioRepository>();
 
+
+builder.Services.AddScoped<IFuncionarioService, FuncionarioService>();
+builder.Services.AddScoped<IEmpresaService, EmpresaService>();
+builder.Services.AddScoped<IClienteService, ClienteService>();
+builder.Services.AddScoped<IServicoService, ServicoService>();
+builder.Services.AddScoped<IAgendamentoService, AgendamentoService>();
 // Configuração para escutar todas as interfaces de rede **sem HTTPS**
 builder.WebHost.ConfigureKestrel(options =>
 {
