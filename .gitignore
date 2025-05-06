@@ -454,6 +454,7 @@ obj/
 
 # CMake
 cmake-build-*/
+Documents/Diagrams/Akari Beauty - Diagrama.asta.lock
 
 # Mongo Explorer plugin
 .idea/**/mongoSettings.xml
