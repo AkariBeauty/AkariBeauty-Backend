@@ -1,6 +1,7 @@
 ﻿using AkariBeauty.Objects.Enums;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace AkariBeauty.Objects.Models
 {
@@ -11,10 +12,10 @@ namespace AkariBeauty.Objects.Models
         public int Id { get; set; }
 
         [Column("data")]
-        public DateTime Data { get; set; }
+        public DateOnly Data { get; set; }
 
         [Column("hora")]
-        public DateTime Hora { get; set; }
+        public TimeOnly Hora { get; set; }
 
         [Column("valor")]
         public float Valor { get; set; }
@@ -27,15 +28,17 @@ namespace AkariBeauty.Objects.Models
 
         [Column("clienteid")][ForeignKey("cliente")]
         public int ClienteId { get; set; }
-        public Cliente Cliente { get; set; }
 
         [Column("empresaid")][ForeignKey("empresa")]
         public int EmpresaId { get; set; }
-        public Empresa Empresa { get; set; }
+        [JsonIgnore]
+        public Empresa? Empresa { get; set; }
+        [JsonIgnore]
+        public Cliente? Cliente { get; set; }
 
         public Agendamento() { }
 
-        public Agendamento(int id, DateTime data, DateTime hora, float valor, float comissao, StatusAgendamento statusAgendamento, int clienteId, int empresaId)
+        public Agendamento(int id, DateOnly data, TimeOnly hora, float valor, float comissao, StatusAgendamento statusAgendamento, int clienteId, int empresaId)
         {
             Id = id;
             Data = data;

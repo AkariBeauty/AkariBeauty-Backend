@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace AkariBeauty.Objects.Models
 {
@@ -38,6 +39,9 @@ namespace AkariBeauty.Objects.Models
 
         [Column("adiantamento")]
         public bool Adiantamento { get; set; }
+
+        [JsonIgnore]
+        public ICollection<Agendamento>? Agendamentos { get; set; }
 
         public Empresa() { }
 

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace AkariBeauty.Objects.Models
 {
@@ -37,6 +38,9 @@ namespace AkariBeauty.Objects.Models
 
         [Column("telefone")]
         public string Telefone { get; set; }
+
+        [JsonIgnore]
+        public ICollection<Agendamento>? Agendamentos { get; set; }
 
         public Cliente() { }
 
