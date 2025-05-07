@@ -24,13 +24,15 @@ namespace AkariBeauty.Data.Builders
 
             modelBuilder.Entity<Agendamento>().Property(a => a.StatusAgendamento)
                 .IsRequired();
-            modelBuilder.Entity<Agendamento>().Property(a => a.ClienteId)
-                .IsRequired();
+            modelBuilder.Entity<Agendamento>().HasOne(a => a.Cliente)
+                .WithMany(c => c.Agendamentos)
+                .HasForeignKey(a => a.ClienteId);
             modelBuilder.Entity<Agendamento>().Property(a => a.EmpresaId)
                 .IsRequired();
 
-            modelBuilder.Entity<Agendamento>().HasData(new List<Agendamento>
-{
+            modelBuilder.Entity<Agendamento>()
+            .HasData(new List<Agendamento>
+            {
                 new Agendamento(1, new DateOnly(2025, 2, 5), new TimeOnly(15, 17), 100.00f, 30.00f, StatusAgendamento.CONFIRMADO, 1, 1),
                 new Agendamento(2, new DateOnly(2025, 1, 4), new TimeOnly(21, 12), 120.00f, 36.00f, StatusAgendamento.REALIZADO, 2, 1),
                 new Agendamento(3, new DateOnly(2025, 4, 2), new TimeOnly(11, 30), 80.00f, 24.00f, StatusAgendamento.CANCELADO, 3, 2)

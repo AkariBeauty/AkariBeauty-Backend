@@ -41,7 +41,17 @@ namespace AkariBeauty.Objects.Models
         public bool Adiantamento { get; set; }
 
         [JsonIgnore]
-        public ICollection<Agendamento>? Agendamentos { get; set; }
+        public ICollection<Servico>? Servicos { get; set; }
+
+        [JsonIgnore]
+        public ICollection<Funcionario>? Funcionarios { get; set; }
+
+        // [JsonIgnore]
+        // public ICollection<Despesa>? Despesas { get; set;}
+
+        // [JsonIgnore]
+        // public ICollection<Profissional>? Profissionais { get; set; }
+
 
         public Empresa() { }
 

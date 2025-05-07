@@ -21,15 +21,11 @@ namespace AkariBeauty.Data
         {
             base.OnModelCreating(modelBuilder);
 
-
             ServicoBuilder.Build(modelBuilder);
 			AgendamentoBuilder.Build(modelBuilder);
 			EmpresaBuilder.Build(modelBuilder);
 			ClienteBuilder.Build(modelBuilder);
 			FuncionarioBuilder.Build(modelBuilder);
-			
-
-
 
 		}
 	}
