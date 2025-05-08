@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace AkariBeauty.Objects.Models
@@ -6,6 +7,7 @@ namespace AkariBeauty.Objects.Models
     [Table("funcionario")]
     public class Funcionario
     {
+        [Key]
         [Column("id")]
         public int Id { get; set; }
 
@@ -26,10 +28,11 @@ namespace AkariBeauty.Objects.Models
 
         [Column("empresa_id")][ForeignKey("Empresa")]
         public int EmpresaId { get; set; }
-
         [JsonIgnore]
         public Empresa? Empresa { get; set; }
 
+        // [JsonIgnore]
+        // public ICollection<ContaPagar>? ContasPagar { get; set;}
         public Funcionario() { }
 
         public Funcionario(int id, string nome, string cpf, float salario, string login, string senha, int empresaId)

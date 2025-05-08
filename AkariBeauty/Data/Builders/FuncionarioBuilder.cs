@@ -24,11 +24,20 @@ namespace AkariBeauty.Data.Builders
                 modelBuilder.Entity<Funcionario>().Property(f => f.Senha)
                     .IsRequired().HasMaxLength(50);
 
+                modelBuilder.Entity<Funcionario>().Property(f => f.EmpresaId)
+                    .IsRequired();
+                
+                modelBuilder.Entity<Funcionario>()
+                    .HasOne(e => e.Empresa)
+                    .WithMany(f => f.Funcionarios)
+                    .HasForeignKey(f => f.EmpresaId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
                 modelBuilder.Entity<Funcionario>().HasData(new List<Funcionario>
 {
-                    new Funcionario(1, "Julia Souza", "123.456.789-00", 3000.00f, "julia.souza", "senha123"),
-                    new Funcionario(2, "Marina Rocha", "987.654.321-00", 2800.00f, "marina.rocha", "senha123"),
-                    new Funcionario(3, "Patrícia Lima", "321.654.987-00", 3200.00f, "patricia.lima", "senha123")
+                    new Funcionario(1, "Julia Souza", "123.456.789-00", 3000.00f, "julia.souza", "senha123", 1),
+                    new Funcionario(2, "Marina Rocha", "987.654.321-00", 2800.00f, "marina.rocha", "senha123", 1),
+                    new Funcionario(3, "Patrícia Lima", "321.654.987-00", 3200.00f, "patricia.lima", "senha123", 1)
                 });
 
         }

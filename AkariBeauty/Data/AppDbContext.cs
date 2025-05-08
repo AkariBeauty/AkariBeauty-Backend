@@ -15,8 +15,6 @@ namespace AkariBeauty.Data
 		public DbSet<Empresa> Empresas { get; set; }
 		public DbSet<Funcionario> Funcionarios { get; set; }
 
-
-
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -26,6 +24,7 @@ namespace AkariBeauty.Data
 			EmpresaBuilder.Build(modelBuilder);
 			ClienteBuilder.Build(modelBuilder);
 			FuncionarioBuilder.Build(modelBuilder);
+			ServicoAgendamentoBuilder.Build(modelBuilder);
 
 		}
 	}

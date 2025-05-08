@@ -10,8 +10,8 @@
         public string Bairro { get; set; }
         public string Rua { get; set; }
         public int Numero {  get; set; }
-        public DateTime HoraInicial { get; set; }
-        public DateTime HoraFinal {  get; set; } 
+        public TimeOnly HoraInicial { get; set; }
+        public TimeOnly HoraFinal {  get; set; } 
         public bool Adiantamento {  get; set; }
 
     }

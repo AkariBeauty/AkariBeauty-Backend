@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -7,6 +8,7 @@ namespace AkariBeauty.Objects.Models
     [Table("empresa")]
     public class Empresa
     {
+        [Key]
         [Column("id")]
         public int Id { get; set; }
 
@@ -41,17 +43,16 @@ namespace AkariBeauty.Objects.Models
         public bool Adiantamento { get; set; }
 
         [JsonIgnore]
-        public ICollection<Servico>? Servicos { get; set; }
+        public ICollection<Servico>? Servicos { get; set; } = new List<Servico>();
 
         [JsonIgnore]
-        public ICollection<Funcionario>? Funcionarios { get; set; }
+        public ICollection<Funcionario>? Funcionarios { get; set; } = new List<Funcionario>();
 
         // [JsonIgnore]
-        // public ICollection<Despesa>? Despesas { get; set;}
+        // public ICollection<Despesa>? Despesas { get; set;} = new List<Despesa>();
 
         // [JsonIgnore]
-        // public ICollection<Profissional>? Profissionais { get; set; }
-
+        // public ICollection<Profissional>? Profissionais { get; set; } = new List<Profissional>();
 
         public Empresa() { }
 
