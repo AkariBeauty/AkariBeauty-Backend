@@ -90,6 +90,7 @@ builder.Services.AddScoped<IAgendamentoRepository, AgendamentoRepository>();
 builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
 builder.Services.AddScoped<IEmpresaRepository, EmpresaRepository>();
 builder.Services.AddScoped<IFuncionarioRepository, FuncionarioRepository>();
+builder.Services.AddScoped<IServicoAgendamentoRepository, ServicoAgendamentoRepository>();
 
 
 builder.Services.AddScoped<IFuncionarioService, FuncionarioService>();
@@ -97,6 +98,8 @@ builder.Services.AddScoped<IEmpresaService, EmpresaService>();
 builder.Services.AddScoped<IClienteService, ClienteService>();
 builder.Services.AddScoped<IServicoService, ServicoService>();
 builder.Services.AddScoped<IAgendamentoService, AgendamentoService>();
+builder.Services.AddScoped<IServicoAgendamentoService, ServicoAgendamentoService>();
+
 // Configuração para escutar todas as interfaces de rede **sem HTTPS**
 builder.WebHost.ConfigureKestrel(options =>
 {

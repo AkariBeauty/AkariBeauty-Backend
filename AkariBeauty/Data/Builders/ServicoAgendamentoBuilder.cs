@@ -8,10 +8,11 @@ public class ServicoAgendamentoBuilder
 {
     public static void Build(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Servico>(entity => {
-            entity.HasMany(a => a.Agendamentos)
-                .WithMany(s => s.Servicos)
-                .UsingEntity(t=> t.ToTable("servico_agendamento")); 
-        });
+        modelBuilder.Entity<Servico>()
+            .HasMany(s => s.Agendamentos)
+            .WithMany(a => a.Servicos)
+            .UsingEntity(j => j.ToTable("servico_agendamento"));
+
+
     }
 }
