@@ -1,10 +1,12 @@
 ﻿using AkariBeauty.Data.Interfaces;
 using AkariBeauty.Objects.Models;
 using AkariBeauty.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AkariBeauty.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/v1/[controller]")]
     public class ServicoController : Controller

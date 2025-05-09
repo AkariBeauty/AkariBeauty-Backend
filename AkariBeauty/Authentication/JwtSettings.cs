@@ -1,11 +1,11 @@
-﻿namespace AkariBeauty.Authentication
+using System;
+
+namespace AkariBeauty.Authentication;
+
+public class JwtSettings
 {
-    public class JwtSettings
-    {
-
-        public string Issuer { get; } = "AkariBeautyAPI";
-        public string Audience { get; } = "AkariBeautyERPCRM";
-        public string Key { get; } = "AkariBeautyAPI_Barrament_Users_Authentication";
-
-    }
+    public string Key { get; set; } = string.Empty;
+    public string Issuer { get; set; } = string.Empty;
+    public string Audience { get; set; } = string.Empty;
+    public double ExpireMinutes { get; set; }
 }

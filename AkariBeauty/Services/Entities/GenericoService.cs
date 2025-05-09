@@ -8,7 +8,6 @@ namespace AkariBeauty.Services.Entities
     {
         private readonly IGenericoRepository<T> _repository;
         private readonly IMapper _mapper;
-        private IMapper mapper;
 
         public GenericoService(IGenericoRepository<T> repository, IMapper mapper)
         {
