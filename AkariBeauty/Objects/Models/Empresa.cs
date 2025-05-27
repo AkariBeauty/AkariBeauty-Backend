@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using AkariBeauty.Services.Types;
 
 namespace AkariBeauty.Objects.Models
 {
@@ -13,7 +14,14 @@ namespace AkariBeauty.Objects.Models
         public int Id { get; set; }
 
         [Column("cnpj")]
-        public string Cnpj { get; set; }
+        public string CnpjRaw { get; private set; } = null!;
+
+        [NotMapped]
+        public Cnpj Cnpj
+        {
+            get => new Cnpj(CnpjRaw);
+            set => CnpjRaw = value.ToString();
+        }
 
         [Column("razao_social")]
         public string RazaoSocial { get; set; }
@@ -59,7 +67,7 @@ namespace AkariBeauty.Objects.Models
         public Empresa(int id, string cnpj, string razaoSocial, string uf, string cidade, string bairro, string rua, int numero, TimeOnly horaInicial, TimeOnly horaFinal, bool adiantamento)
         {
             Id = id;
-            Cnpj = cnpj;
+            CnpjRaw = cnpj;
             RazaoSocial = razaoSocial;
             Uf = uf;
             Cidade = cidade;
