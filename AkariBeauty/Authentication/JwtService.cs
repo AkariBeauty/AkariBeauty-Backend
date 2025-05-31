@@ -3,13 +3,13 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
-namespace AkariBeauty.Authentication;
+namespace AkariBeauty.Jwt;
 
-public class AuthenticationService
+public class JwtService
 {
     private readonly IConfiguration _configuration;
 
-    public AuthenticationService(IConfiguration configuration)
+    public JwtService(IConfiguration configuration)
     {
         _configuration = configuration;
     }
