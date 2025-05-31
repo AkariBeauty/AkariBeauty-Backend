@@ -1,11 +1,11 @@
-﻿using AkariBeauty.Objects.Models;
+﻿using AkariBeauty.Controllers.Dtos;
+using AkariBeauty.Objects.Models;
 using AkariBeauty.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AkariBeauty.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/v1/[controller]")]
     public class EmpresaController : Controller
@@ -73,6 +73,14 @@ namespace AkariBeauty.Controllers
                 return StatusCode(500, "Ocorreu um erro ao tentar remover a empresa");
             }
             return Ok("Empresa removida com sucesso");
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] RequestLogin request)
+        {
+            var authHeader = Request.Headers["Authorization"].ToString();
+
+            throw new NotImplementedException();
         }
     }
 }

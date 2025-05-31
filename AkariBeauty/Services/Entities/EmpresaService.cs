@@ -1,4 +1,5 @@
-﻿using AkariBeauty.Data.Interfaces;
+﻿using AkariBeauty.Controllers.Dtos;
+using AkariBeauty.Data.Interfaces;
 using AkariBeauty.Objects.Models;
 using AkariBeauty.Services.Interfaces;
 using AutoMapper;
@@ -14,6 +15,11 @@ namespace AkariBeauty.Services.Entities
         {
             _empresaRepository = repository;
             _mapper = mapper;
+        }
+
+        public async Task<string> Login(RequestLogin request)
+        {
+            return "";
         }
     }
 }

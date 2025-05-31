@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using AkariBeauty.Services.Types;
@@ -13,14 +12,15 @@ namespace AkariBeauty.Objects.Models
         [Column("id")]
         public int Id { get; set; }
 
-        [Column("cnpj")]
-        public string CnpjRaw { get; private set; } = null!;
-
+        [JsonIgnore]
         [NotMapped]
-        public Cnpj Cnpj
+        private string _cnpj { get; set; }
+
+        [Column("cnpj")]
+        public string Cnpj
         {
-            get => new Cnpj(CnpjRaw);
-            set => CnpjRaw = value.ToString();
+            get => _cnpj;
+            set => _cnpj = CnpjValidade.Validar(value);
         }
 
         [Column("razao_social")]
@@ -41,9 +41,11 @@ namespace AkariBeauty.Objects.Models
         [Column("numero")]
         public int Numero { get; set; }
 
+        [JsonConverter(typeof(TimeOnlyJsonConverter))]
         [Column("hora_inicial")]
         public TimeOnly HoraInicial { get; set; }
 
+        [JsonConverter(typeof(TimeOnlyJsonConverter))]
         [Column("hora_final")]
         public TimeOnly HoraFinal { get; set; }
 
@@ -54,7 +56,7 @@ namespace AkariBeauty.Objects.Models
         public ICollection<Servico>? Servicos { get; set; } = new List<Servico>();
 
         [JsonIgnore]
-        public ICollection<Funcionario>? Funcionarios { get; set; } = new List<Funcionario>();
+        public ICollection<Usuario>? Usuarios { get; set; } = new List<Usuario>();
 
         // [JsonIgnore]
         // public ICollection<Despesa>? Despesas { get; set;} = new List<Despesa>();
@@ -67,7 +69,7 @@ namespace AkariBeauty.Objects.Models
         public Empresa(int id, string cnpj, string razaoSocial, string uf, string cidade, string bairro, string rua, int numero, TimeOnly horaInicial, TimeOnly horaFinal, bool adiantamento)
         {
             Id = id;
-            CnpjRaw = cnpj;
+            Cnpj = cnpj;
             RazaoSocial = razaoSocial;
             Uf = uf;
             Cidade = cidade;

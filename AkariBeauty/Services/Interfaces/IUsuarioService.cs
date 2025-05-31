@@ -2,7 +2,7 @@
 
 namespace AkariBeauty.Services.Interfaces
 {
-    public interface IFuncionarioService : IGenericoService<Funcionario>
+    public interface IUsuarioService : IGenericoService<Usuario>
     {
     }
 }

@@ -8,58 +8,58 @@ namespace AkariBeauty.Controllers
     [Authorize]
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class FuncionarioController : Controller
+    public class UsuarioController : Controller
     {
 
-        private readonly IFuncionarioService _funcionarioService;
+        private readonly IUsuarioService _usuarioService;
 
-        public FuncionarioController(IFuncionarioService funcionario)
+        public UsuarioController(IUsuarioService usuario)
         {
-            this._funcionarioService = funcionario;
+            this._usuarioService = usuario;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var funcionarios = await _funcionarioService.GetAll();
-            return Ok(funcionarios);
+            var usuarios = await _usuarioService.GetAll();
+            return Ok(usuarios);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var funcionarios = _funcionarioService.GetById(id);
-            if (funcionarios == null)
+            var usuarios = _usuarioService.GetById(id);
+            if (usuarios == null)
                 return NotFound("Funcionário não encontrado");
-            return Ok(funcionarios);
+            return Ok(usuarios);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Funcionario funcionario)
+        public async Task<IActionResult> Post(Usuario usuario)
         {
             try
             {
-                await _funcionarioService.Create(funcionario);
+                await _usuarioService.Create(usuario);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, "Ocorreu um erro ao tentar inserir um novo funcionário");
             }
-            return Ok(funcionario);
+            return Ok(usuario);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, Funcionario funcionario)
+        public async Task<IActionResult> Put(int id, Usuario usuario)
         {
             try
             {
-                await _funcionarioService.Update(funcionario, id);
+                await _usuarioService.Update(usuario, id);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, "Ocorreu um erro ao tentar atualizar os dados do funcionário" + ex.Message);
             }
-            return Ok(funcionario);
+            return Ok(usuario);
         }
 
         [HttpDelete("{id}")]
@@ -67,7 +67,7 @@ namespace AkariBeauty.Controllers
         {
             try
             {
-                await _funcionarioService.Remove(id);
+                await _usuarioService.Remove(id);
             }
             catch (Exception ex)
             {

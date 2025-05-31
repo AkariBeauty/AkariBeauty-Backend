@@ -28,7 +28,7 @@ namespace AkariBeauty.Services.Entities
             return _mapper.Map<T>(entity);
         }
 
-        public async Task Create(T entity)
+        public virtual async Task Create(T entity)
         {
             await _repository.Add(entity);
         }

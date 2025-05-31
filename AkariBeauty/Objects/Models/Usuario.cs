@@ -4,8 +4,8 @@ using System.Text.Json.Serialization;
 
 namespace AkariBeauty.Objects.Models
 {
-    [Table("funcionario")]
-    public class Funcionario
+    [Table("usuario")]
+    public class Usuario
     {
         [Key]
         [Column("id")]
@@ -26,16 +26,17 @@ namespace AkariBeauty.Objects.Models
         [Column("senha")]
         public string Senha { get; set; }
 
-        [Column("empresa_id")][ForeignKey("Empresa")]
+        [Column("empresa_id")]
+        [ForeignKey("Empresa")]
         public int EmpresaId { get; set; }
         [JsonIgnore]
         public Empresa? Empresa { get; set; }
 
         // [JsonIgnore]
         // public ICollection<ContaPagar>? ContasPagar { get; set;}
-        public Funcionario() { }
+        public Usuario() { }
 
-        public Funcionario(int id, string nome, string cpf, float salario, string login, string senha, int empresaId)
+        public Usuario(int id, string nome, string cpf, float salario, string login, string senha, int empresaId)
         {
             Id = id;
             Nome = nome;

@@ -2,7 +2,7 @@
 
 namespace AkariBeauty.Data.Interfaces
 {
-    public interface IFuncionarioRepository : IGenericoRepository<Funcionario>
+    public interface IUsuarioRepository : IGenericoRepository<Usuario>
     {
 
     }

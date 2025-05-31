@@ -6,6 +6,7 @@ using AkariBeauty.Data.Repositories;
 using AkariBeauty.Services.Entities;
 using AkariBeauty.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -32,6 +33,13 @@ builder.Services.Configure<RouteOptions>(options =>
 // Configuração do Swagger
 builder.Services.AddSwaggerGen(c =>
 {
+    c.MapType<TimeOnly>(() => new Microsoft.OpenApi.Models.OpenApiSchema
+    {
+        Type = "string",
+        Format = "time",
+        Example = new Microsoft.OpenApi.Any.OpenApiString("00:00:00")
+    });
+
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Akari Beauty API", Version = "v1" });
 
     // Configurando botão de Autenticação no Swagger
@@ -81,6 +89,12 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Para APIs
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.SerializerOptions.Converters.Add(new TimeOnlyJsonConverter());
+});
+
 // AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -89,11 +103,11 @@ builder.Services.AddScoped<IServicoRepository, ServicoRepository>();
 builder.Services.AddScoped<IAgendamentoRepository, AgendamentoRepository>();
 builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
 builder.Services.AddScoped<IEmpresaRepository, EmpresaRepository>();
-builder.Services.AddScoped<IFuncionarioRepository, FuncionarioRepository>();
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IServicoAgendamentoRepository, ServicoAgendamentoRepository>();
 
 
-builder.Services.AddScoped<IFuncionarioService, FuncionarioService>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IEmpresaService, EmpresaService>();
 builder.Services.AddScoped<IClienteService, ClienteService>();
 builder.Services.AddScoped<IServicoService, ServicoService>();
