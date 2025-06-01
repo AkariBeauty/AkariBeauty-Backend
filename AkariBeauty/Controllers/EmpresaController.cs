@@ -34,17 +34,21 @@ namespace AkariBeauty.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Empresa empresa)
+        public async Task<IActionResult> Post([FromBody] EmpresaComUsuarioDTO dto)
         {
             try
             {
-                await _empresaService.Create(empresa);
+                await _empresaService.Create(dto);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception)
             {
                 return StatusCode(500, "Ocorreu um erro ao tentar inserir uma nova empresa");
             }
-            return Ok(empresa);
+            return Ok(dto.Empresa);
         }
 
         [HttpPut("{id}")]

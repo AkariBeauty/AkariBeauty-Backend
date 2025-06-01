@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using AkariBeauty.Objects.Models;
+using AkariBeauty.Objects.Enums;
 
 namespace AkariBeauty.Data.Builders
 {
@@ -27,6 +28,9 @@ namespace AkariBeauty.Data.Builders
             modelBuilder.Entity<Usuario>().Property(f => f.EmpresaId)
                 .IsRequired();
 
+            modelBuilder.Entity<Usuario>().Property(f => f.TipoUsuario)
+                .IsRequired();
+
             modelBuilder.Entity<Usuario>()
                 .HasOne(e => e.Empresa)
                 .WithMany(f => f.Usuarios)
@@ -35,9 +39,9 @@ namespace AkariBeauty.Data.Builders
 
             modelBuilder.Entity<Usuario>().HasData(new List<Usuario>
 {
-                    new Usuario(1, "Julia Souza", "123.456.789-00", 3000.00f, "julia.souza", "senha123", 1),
-                    new Usuario(2, "Marina Rocha", "987.654.321-00", 2800.00f, "marina.rocha", "senha123", 1),
-                    new Usuario(3, "Patrícia Lima", "321.654.987-00", 3200.00f, "patricia.lima", "senha123", 1)
+                    new Usuario(1, "Julia Souza", "123.456.789-00", 3000.00f, "julia.souza", "senha123", TipoUsuario.ADMIN, 1),
+                    new Usuario(2, "Marina Rocha", "987.654.321-00", 2800.00f, "marina.rocha", "senha123",TipoUsuario.RECEPCIONISTA, 1),
+                    new Usuario(3, "Patrícia Lima", "321.654.987-00", 3200.00f, "patricia.lima", "senha123",TipoUsuario.RECEPCIONISTA, 1)
                 });
 
         }

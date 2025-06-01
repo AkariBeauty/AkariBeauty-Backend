@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AkariBeauty.Controllers
 {
-    [Authorize]
+    // [Authorize]
     [ApiController]
     [Route("api/v1/[controller]")]
     public class UsuarioController : Controller
