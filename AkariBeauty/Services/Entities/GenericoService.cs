@@ -4,7 +4,7 @@ using AutoMapper;
 
 namespace AkariBeauty.Services.Entities
 {
-    public class GenericoService<T> : IGenericoService<T> where T : class
+    public class GenericoService<T, TDto> : IGenericoService<T, TDto> where T : class where TDto : class
     {
         private readonly IGenericoRepository<T> _repository;
         private readonly IMapper _mapper;
@@ -16,16 +16,16 @@ namespace AkariBeauty.Services.Entities
         }
 
 
-        public async Task<IEnumerable<T>> GetAll()
+        public async Task<IEnumerable<TDto>> GetAll()
         {
             var entities = await _repository.Get();
-            return _mapper.Map<IEnumerable<T>>(entities);
+            return _mapper.Map<IEnumerable<TDto>>(entities);
         }
 
-        public async Task<T> GetById(int id)
+        public async Task<TDto> GetById(int id)
         {
             var entity = await _repository.GetById(id);
-            return _mapper.Map<T>(entity);
+            return _mapper.Map<TDto>(entity);
         }
 
         public virtual async Task Create(T entity)

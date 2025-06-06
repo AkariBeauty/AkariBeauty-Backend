@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AkariBeauty.Controllers
 {
+    // [Authorize]
     [ApiController]
     [Route("api/v1/[controller]")]
     public class EmpresaController : Controller
@@ -34,21 +35,24 @@ namespace AkariBeauty.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] EmpresaComUsuarioDTO dto)
+        public async Task<IActionResult> Post(EmpresaComUsuarioDTO dto)
         {
             try
             {
-                await _empresaService.Create(dto);
+                var empresa = dto.Empresa;
+                empresa.Usuarios?.Add(dto.Usuario);
+                var retorno = await _empresaService.Create(empresa);
+
+                return Ok(retorno);
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, "Ocorreu um erro ao tentar inserir uma nova empresa");
+                return StatusCode(500, "Ocorreu um erro ao tentar inserir uma nova empresa" + ex.Message);
             }
-            return Ok(dto.Empresa);
         }
 
         [HttpPut("{id}")]

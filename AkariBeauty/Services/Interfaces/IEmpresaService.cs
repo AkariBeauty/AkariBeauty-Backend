@@ -1,10 +1,10 @@
-﻿using AkariBeauty.Controllers.Dtos;
+﻿using AkariBeauty.Objects.Dtos.Entities;
 using AkariBeauty.Objects.Models;
 
 namespace AkariBeauty.Services.Interfaces
 {
-    public interface IEmpresaService : IGenericoService<Empresa>
+    public interface IEmpresaService : IGenericoService<Empresa, EmpresaDTO>
     {
-        Task Create(EmpresaComUsuarioDTO dto);
+        new Task<EmpresaDTO> Create(Empresa empresa);
     }
 }

@@ -1,13 +1,13 @@
 ﻿using AkariBeauty.Controllers.Dtos;
 using AkariBeauty.Data.Interfaces;
-using AkariBeauty.Data.Repositories;
+using AkariBeauty.Objects.Dtos.Entities;
 using AkariBeauty.Objects.Models;
 using AkariBeauty.Services.Interfaces;
 using AutoMapper;
 
 namespace AkariBeauty.Services.Entities
 {
-    public class EmpresaService : GenericoService<Empresa>, IEmpresaService
+    public class EmpresaService : GenericoService<Empresa, EmpresaDTO>, IEmpresaService
     {
         private readonly IEmpresaRepository _empresaRepository;
         private readonly IMapper _mapper;
@@ -18,26 +18,33 @@ namespace AkariBeauty.Services.Entities
             _mapper = mapper;
         }
 
-        public async Task Create(EmpresaComUsuarioDTO dto)
+        public override async Task<EmpresaDTO> Create(Empresa entity)
         {
 
-            Empresa entity = dto.Empresa;
-            Usuario usuario = dto.Usuario;
-            
             var empresa = await _empresaRepository.FindByCnpj(entity.Cnpj);
             if (empresa != null)
                 throw new Exception("Empresa ja cadastrada");
+
+            var usuario = entity.Usuarios?.FirstOrDefault() ?? new Usuario();
+            if (usuario == null)
+                throw new Exception("Informe o usuário!");
+
+            entity.Usuarios = null;
 
             await _empresaRepository.Add(entity);
 
             empresa = await _empresaRepository.FindByCnpj(entity.Cnpj);
 
+            if (empresa.Usuarios == null)
+                empresa.Usuarios = new List<Usuario>();
+
             usuario.Empresa = empresa;
             usuario.TipoUsuario = Objects.Enums.TipoUsuario.ADMIN;
-
-            empresa.Usuarios?.Add(usuario);
+            empresa.Usuarios.Add(usuario);
 
             await _empresaRepository.SaveChanges();
+
+            return _mapper.Map<EmpresaDTO>(empresa);
 
         }
 
