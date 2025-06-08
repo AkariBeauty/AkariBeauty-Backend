@@ -1,4 +1,5 @@
-﻿using AkariBeauty.Controllers.Dtos;
+﻿using System.Runtime.CompilerServices;
+using AkariBeauty.Controllers.Dtos;
 using AkariBeauty.Objects.Models;
 using AkariBeauty.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -6,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AkariBeauty.Controllers
 {
-    // [Authorize]
+    [Authorize]
     [ApiController]
     [Route("api/v1/[controller]")]
     public class EmpresaController : Controller
@@ -83,12 +84,23 @@ namespace AkariBeauty.Controllers
             return Ok("Empresa removida com sucesso");
         }
 
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] RequestLogin request)
+        [HttpPatch("login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(RequestLoginDTO request)
         {
-            var authHeader = Request.Headers["Authorization"].ToString();
-
-            throw new NotImplementedException();
+            try
+            {
+                var token = await _empresaService.Login(request);
+                return Ok( token );
+            }
+            catch (ArgumentException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro ao acessar o servidor: " + ex.Message);
+            }
         }
     }
 }

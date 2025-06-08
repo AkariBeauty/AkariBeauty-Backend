@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using AkariBeauty.Objects.Enums;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AkariBeauty.Jwt;
@@ -14,7 +15,7 @@ public class JwtService
         _configuration = configuration;
     }
 
-    public string GenerateJwtToken(string type, string identifier)
+    public string GenerateJwtToken(TipoUsuario type, string identifier)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
@@ -22,7 +23,7 @@ public class JwtService
 
         var claims = new[]
         {
-            new Claim("type", type),
+            new Claim("type", type.ToString()),
             new Claim("identifier", identifier)
         };
 

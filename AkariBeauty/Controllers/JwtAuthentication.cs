@@ -21,7 +21,7 @@ namespace AkariBeauty.Controllers
         [HttpPost]
         public IActionResult Login()
         {
-            return Ok();
+            return Ok("Logado com sucesso");
         }
 
 
