@@ -15,7 +15,7 @@ public class JwtService
         _configuration = configuration;
     }
 
-    public string GenerateJwtToken(TipoUsuario type, string identifier)
+    public string GenerateJwtToken(string type, string identifier)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));

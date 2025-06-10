@@ -1,4 +1,6 @@
-﻿using AkariBeauty.Data.Interfaces;
+﻿using AkariBeauty.Controllers.Dtos;
+using AkariBeauty.Data.Interfaces;
+using AkariBeauty.Jwt;
 using AkariBeauty.Objects.Dtos.Entities;
 using AkariBeauty.Objects.Models;
 using AkariBeauty.Services.Interfaces;
@@ -11,10 +13,30 @@ namespace AkariBeauty.Services.Entities
         private readonly IClienteRepository _clienteRepository;
         private readonly IMapper _mapper;
 
-        public ClienteService(IClienteRepository repository, IMapper mapper) : base(repository, mapper)
+        private readonly JwtService _jwtService;
+
+        public ClienteService(IClienteRepository repository, IConfiguration configuration, IMapper mapper) : base(repository, mapper)
         {
             _clienteRepository = repository;
+            _jwtService = new JwtService(configuration);
             _mapper = mapper;
+        }
+
+        public async Task<string> Login(RequestLoginDTO request)
+        {
+            // Receber as informaçẽos
+            Cliente cliente = await _clienteRepository.GetByLogin(request.Login);
+
+            // Verificar a existencia 
+            if (cliente == null)
+                throw new ArgumentException("Usuário ou senha inválidos.");
+
+            // Verificar a senha
+            if (cliente.Senha != request.Password)
+                throw new ArgumentException("Usuário ou senha inválidos.");
+
+            // Retornar o token
+            return _jwtService.GenerateJwtToken("CLIENTE", cliente.Id.ToString());
         }
     }
 }
