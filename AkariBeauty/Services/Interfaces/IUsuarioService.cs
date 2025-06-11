@@ -3,7 +3,7 @@ using AkariBeauty.Objects.Models;
 
 namespace AkariBeauty.Services.Interfaces
 {
-    public interface IUsuarioService : IGenericoService<Usuario, UsuarioDTO>
+    public interface IUsuarioService : IGenericoService<Usuario, UsuarioDTO>, IGenericLogin
     {
     }
 }

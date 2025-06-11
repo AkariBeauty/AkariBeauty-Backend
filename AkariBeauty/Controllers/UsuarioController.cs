@@ -1,4 +1,5 @@
-﻿using AkariBeauty.Objects.Models;
+﻿using AkariBeauty.Controllers.Dtos;
+using AkariBeauty.Objects.Models;
 using AkariBeauty.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +29,7 @@ namespace AkariBeauty.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var usuarios = _usuarioService.GetById(id);
+            var usuarios = await _usuarioService.GetById(id);
             if (usuarios == null)
                 return NotFound("Funcionário não encontrado");
             return Ok(usuarios);
@@ -74,6 +75,25 @@ namespace AkariBeauty.Controllers
                 return StatusCode(500, "Ocorreu um erro ao tentar remover um funcionário");
             }
             return Ok("Funcionário removido com sucesso");
+        }
+
+        [AllowAnonymous]
+        [HttpPatch("login")]
+        public async Task<IActionResult> Login(RequestLoginDTO request)
+        {
+            try
+            {
+                var token = await _usuarioService.Login(request);
+                return Ok(token);
+            }
+            catch (ArgumentException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro ao acessar o servidor: " + ex.Message);
+            }
         }
     }
 }
