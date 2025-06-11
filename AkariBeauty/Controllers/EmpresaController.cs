@@ -1,4 +1,6 @@
-﻿using AkariBeauty.Objects.Models;
+﻿using System.Runtime.CompilerServices;
+using AkariBeauty.Controllers.Dtos;
+using AkariBeauty.Objects.Models;
 using AkariBeauty.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,17 +36,24 @@ namespace AkariBeauty.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Empresa empresa)
+        public async Task<IActionResult> Post(EmpresaComUsuarioDTO dto)
         {
             try
             {
-                await _empresaService.Create(empresa);
+                var empresa = dto.Empresa;
+                empresa.Usuarios?.Add(dto.Usuario);
+                var retorno = await _empresaService.Create(empresa);
+
+                return Ok(retorno);
             }
-            catch (Exception)
+            catch (ArgumentException ex)
             {
-                return StatusCode(500, "Ocorreu um erro ao tentar inserir uma nova empresa");
+                return BadRequest(ex.Message);
             }
-            return Ok(empresa);
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Ocorreu um erro ao tentar inserir uma nova empresa" + ex.Message);
+            }
         }
 
         [HttpPut("{id}")]
@@ -73,6 +82,25 @@ namespace AkariBeauty.Controllers
                 return StatusCode(500, "Ocorreu um erro ao tentar remover a empresa");
             }
             return Ok("Empresa removida com sucesso");
+        }
+
+        [HttpPatch("login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(RequestLoginDTO request)
+        {
+            try
+            {
+                var token = await _empresaService.Login(request);
+                return Ok( token );
+            }
+            catch (ArgumentException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro ao acessar o servidor: " + ex.Message);
+            }
         }
     }
 }
