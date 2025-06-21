@@ -61,8 +61,8 @@ namespace AkariBeauty.Objects.Models
         // [JsonIgnore]
         // public ICollection<Despesa>? Despesas { get; set;} = new List<Despesa>();
 
-        // [JsonIgnore]
-        // public ICollection<Profissional>? Profissionais { get; set; } = new List<Profissional>();
+        [JsonIgnore]
+        public ICollection<Profissional>? Profissionais { get; set; } = new List<Profissional>();
 
         public Empresa() { }
 

@@ -5,6 +5,7 @@ using AkariBeauty.Jwt;
 using AkariBeauty.Objects.Dtos.Entities;
 using AkariBeauty.Objects.Enums;
 using AkariBeauty.Objects.Models;
+using AkariBeauty.Services.Entities.Enum;
 using AkariBeauty.Services.Interfaces;
 using AutoMapper;
 
@@ -76,7 +77,7 @@ namespace AkariBeauty.Services.Entities
                 throw new ArgumentException("Usuário ou senha inválidos.");
 
             // Retornar o token
-            return _jwtService.GenerateJwtToken("EMPRESA", usuario.Id.ToString());
+            return _jwtService.GenerateJwtToken(TipoUsuarioSistema.ADMINISTRADOR.ToString(), usuario.Id.ToString());
         }
     }
 }
