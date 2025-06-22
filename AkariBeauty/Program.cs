@@ -105,8 +105,14 @@ builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
 builder.Services.AddScoped<IEmpresaRepository, EmpresaRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IServicoAgendamentoRepository, ServicoAgendamentoRepository>();
+builder.Services.AddScoped<ICategoriaServicoRepository, CategoriaServicoRepository>();
+builder.Services.AddScoped<IProfissionalRepository, ProfissionalRepository>();
+builder.Services.AddScoped<IProfissionalServicoRepository, ProfissionalServicoRepository>();
 
 
+builder.Services.AddScoped<IProfissionalServicoService, ProfissionalServicoService>();
+builder.Services.AddScoped<IProfissionalService, ProfissionalService>();
+builder.Services.AddScoped<ICategoriaServicoService, CategoriaServicoService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IEmpresaService, EmpresaService>();
 builder.Services.AddScoped<IClienteService, ClienteService>();

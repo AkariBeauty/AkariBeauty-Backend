@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using AkariBeauty.Objects.Enums;
+using AkariBeauty.Objects.Relationship;
 
 
 
@@ -21,35 +23,33 @@ namespace AkariBeauty.Objects.Models
 
         [Column("valorbase")]
         public float ValorBase { get; set; }
-
-        [Column("empresa_id")][ForeignKey("Empresa")]
+        [Column("empresa_id")]
+        [ForeignKey("Empresa")]
         public int EmpresaId { get; set; }
         [JsonIgnore]
         public Empresa? Empresa { get; set; }
 
-        // Serviço Agentamento
         [JsonIgnore]
         public ICollection<Agendamento>? Agendamentos { get; set; } = new List<Agendamento>();
 
-        // // TODO: Profissional Serviço
-        // [JsonIgnore]
-        // public ICollection<ProfissionalServico>? ProfissionalServicos { get; set; }
+        [JsonIgnore]
+        public ICollection<ProfissionalServico>? ProfissionalServicos { get; set; } = new List<ProfissionalServico>();
 
-        // TODO: Categoria Serviço(Sem implementação no método construtor)
-        // [Column("categoria_servico_id")][ForeignKey("CategoriaServico")]
-        // public int CategoriaServicoId { get; set;}
-        // [JsonIgnore]
-        // public CategoriaServico? CategoriaServico { get; set; }
+        [Column("categoria_servico_id")][ForeignKey("CategoriaServico")]
+        public int CategoriaServicoId { get; set;}
+        [JsonIgnore]
+        public CategoriaServico? CategoriaServico { get; set; }
 
         public Servico() { }
 
-        public Servico(int id, string servicoPrestado, string descricao, float valorBase, int empresaId)
+        public Servico(int id, string servicoPrestado, string descricao, float valorBase, int empresaId, int categoriaServicoId)
         {
             Id = id;
             ServicoPrestado = servicoPrestado;
             Descricao = descricao;
             ValorBase = valorBase;
             EmpresaId = empresaId;
+            CategoriaServicoId = categoriaServicoId;
         }
     }
 }

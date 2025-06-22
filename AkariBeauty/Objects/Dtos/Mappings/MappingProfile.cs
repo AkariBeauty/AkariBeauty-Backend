@@ -1,5 +1,6 @@
 ﻿using AkariBeauty.Objects.Dtos.Entities;
 using AkariBeauty.Objects.Models;
+using AkariBeauty.Objects.Relationship;
 using AutoMapper;
 
 namespace AkariBeauty.Objectcs.Dtos.Mappings
@@ -24,6 +25,14 @@ namespace AkariBeauty.Objectcs.Dtos.Mappings
             CreateMap<AgendamentoDTO, Agendamento>().ReverseMap();
             CreateMap<Agendamento, AgendamentoDTO>();
 
+            CreateMap<CategoriaServicoDTO, CategoriaServico>().ReverseMap();
+            CreateMap<CategoriaServico, CategoriaServicoDTO>();
+
+            CreateMap<ProfissionalDTO, Profissional>().ReverseMap();
+            CreateMap<Profissional, ProfissionalDTO>();
+
+            CreateMap<ProfissionalServicoDTO, ProfissionalServico>().ReverseMap();
+            CreateMap<ProfissionalServico, ProfissionalServicoDTO>();
 
         }
     }

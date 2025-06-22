@@ -1,4 +1,3 @@
-using System;
 using AkariBeauty.Objects.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,7 +11,5 @@ public class ServicoAgendamentoBuilder
             .HasMany(s => s.Agendamentos)
             .WithMany(a => a.Servicos)
             .UsingEntity(j => j.ToTable("servico_agendamento"));
-
-
     }
 }

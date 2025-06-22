@@ -4,6 +4,7 @@ using AkariBeauty.Jwt;
 using AkariBeauty.Objects.Dtos.Entities;
 using AkariBeauty.Objects.Enums;
 using AkariBeauty.Objects.Models;
+using AkariBeauty.Services.Entities.Enum;
 using AkariBeauty.Services.Interfaces;
 using AutoMapper;
 
@@ -36,7 +37,7 @@ namespace AkariBeauty.Services.Entities
             if (user.TipoUsuario == TipoUsuario.RECEPCIONISTA)
                 throw new ArgumentException("Usuário ou senha inválidos.");
 
-            return _jwtService.GenerateJwtToken("USUARIO", user.Id.ToString());
+            return _jwtService.GenerateJwtToken(TipoUsuarioSistema.USUARIO.ToString(), user.Id.ToString());
         }
     }
 }
