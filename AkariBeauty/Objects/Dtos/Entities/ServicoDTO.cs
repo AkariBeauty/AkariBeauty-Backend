@@ -6,6 +6,7 @@
         public string ServicoPrestado { get; set; }
         public string Descricao { get; set; }
         public string ValorBase { get; set; }
+        public int EmpresaId { get; set; }
 
     }
 }

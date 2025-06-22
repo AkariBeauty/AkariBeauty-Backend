@@ -1,53 +1,56 @@
-﻿using AkariBeauty.Controllers;
+﻿using AkariBeauty.Authentication;
+using AkariBeauty.Controllers;
 using AkariBeauty.Data;
 using AkariBeauty.Data.Interfaces;
 using AkariBeauty.Data.Repositories;
 using AkariBeauty.Services.Entities;
 using AkariBeauty.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-    };
-});
+// 🔥 REMOVIDO: Configuração de Authentication/JWT
 
 // Configuração do Banco de Dados
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
+// Colocando todas as rotas em lowercase(letras minusculas)
+builder.Services.Configure<RouteOptions>(options =>
+{
+    options.LowercaseUrls = true;
+    options.LowercaseQueryStrings = true;
+});
+
+
 // Configuração do Swagger
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "ControleEstoque", Version = "v1" });
+    c.MapType<TimeOnly>(() => new Microsoft.OpenApi.Models.OpenApiSchema
+    {
+        Type = "string",
+        Format = "time",
+        Example = new Microsoft.OpenApi.Any.OpenApiString("00:00:00")
+    });
 
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Akari Beauty API", Version = "v1" });
+
+    // Configurando botão de Autenticação no Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = @"Enter 'Bearer' [space] your token",
         Name = "Authorization",
-        In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Digite o token JWT no campo abaixo:\n\nExemplo: Bearer {seu token}"
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -59,12 +62,9 @@ builder.Services.AddSwaggerGen(c =>
                 {
                     Type = ReferenceType.SecurityScheme,
                     Id = "Bearer"
-                },
-                Scheme = "oauth2",
-                Name = "Bearer",
-                In = ParameterLocation.Header
+                }
             },
-            new List<string>()
+            Array.Empty<string>()
         }
     });
 });
@@ -89,18 +89,67 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Para APIs
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.SerializerOptions.Converters.Add(new TimeOnlyJsonConverter());
+});
+
 // AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // Injeção de Dependências
 builder.Services.AddScoped<IServicoRepository, ServicoRepository>();
+builder.Services.AddScoped<IAgendamentoRepository, AgendamentoRepository>();
+builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
+builder.Services.AddScoped<IEmpresaRepository, EmpresaRepository>();
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IServicoAgendamentoRepository, ServicoAgendamentoRepository>();
+builder.Services.AddScoped<ICategoriaServicoRepository, CategoriaServicoRepository>();
+builder.Services.AddScoped<IProfissionalRepository, ProfissionalRepository>();
+builder.Services.AddScoped<IProfissionalServicoRepository, ProfissionalServicoRepository>();
+
+
+builder.Services.AddScoped<IProfissionalServicoService, ProfissionalServicoService>();
+builder.Services.AddScoped<IProfissionalService, ProfissionalService>();
+builder.Services.AddScoped<ICategoriaServicoService, CategoriaServicoService>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<IEmpresaService, EmpresaService>();
+builder.Services.AddScoped<IClienteService, ClienteService>();
 builder.Services.AddScoped<IServicoService, ServicoService>();
+builder.Services.AddScoped<IAgendamentoService, AgendamentoService>();
+builder.Services.AddScoped<IServicoAgendamentoService, ServicoAgendamentoService>();
 
 // Configuração para escutar todas as interfaces de rede **sem HTTPS**
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(8080); // Porta HTTP
 });
+
+var jwtSettings = new JwtSettings();
+builder.Configuration.Bind("JwtSettings", jwtSettings);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+
+        ValidIssuer = jwtSettings.Issuer,
+        ValidAudience = jwtSettings.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtSettings.Key))
+    };
+});
+
+builder.Services.AddAuthorization();
 
 // Construção do App
 var app = builder.Build();
@@ -112,7 +161,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "ControleEstoque V1");
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Akari Beauty API v1");
         c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
         c.DisplayRequestDuration();
         c.EnableDeepLinking();
@@ -127,6 +176,7 @@ if (app.Environment.IsDevelopment())
             Swashbuckle.AspNetCore.SwaggerUI.SubmitMethod.Patch
         );
     });
+
 }
 else
 {
@@ -134,12 +184,13 @@ else
     app.UseHsts();
 }
 
-// 🔥 **Removido o HTTPS dentro do container**
-// app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 app.UseRouting();
 app.UseCors("MyPolicy");
+
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
+
 app.Run();
