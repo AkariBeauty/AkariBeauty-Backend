@@ -91,11 +91,34 @@ namespace AkariBeauty.Controllers
             try
             {
                 var token = await _empresaService.Login(request);
-                return Ok( token );
+                return Ok(token);
             }
             catch (ArgumentException ex)
             {
                 return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro ao acessar o servidor: " + ex.Message);
+            }
+        }
+
+        [HttpGet("user")]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            try
+            {
+                string token = Request.Headers["Authorization"];
+
+                if (string.IsNullOrEmpty(token))
+                    return BadRequest("Token nao fornecido");
+
+                var empresa = await _empresaService.GetUser(token);
+                return Ok(empresa);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {

@@ -59,6 +59,20 @@ namespace AkariBeauty.Services.Entities
 
         }
 
+        public async Task<UsuarioDTO> GetUser(string token)
+        {
+            var infoToken = _jwtService.GetInfoToken(token);
+            var id = int.Parse(infoToken["identifier"]);
+
+            var user = await _usuarioRepository.GetById(id);
+
+            if (user == null)
+                throw new ArgumentException("Usuario não existente!");
+
+            return _mapper.Map<UsuarioDTO>(user);
+
+        }
+
         public async Task<string> Login(RequestLoginDTO request)
         {
             // Receber as informaçẽos
