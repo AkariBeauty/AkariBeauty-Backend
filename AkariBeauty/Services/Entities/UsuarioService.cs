@@ -34,7 +34,7 @@ namespace AkariBeauty.Services.Entities
             if (user.Senha != request.Password)
                 throw new ArgumentException("Usuário ou senha inválidos.");
 
-            if (user.TipoUsuario == TipoUsuario.RECEPCIONISTA)
+            if (user.TipoUsuario == TipoUsuario.ADMIN)
                 throw new ArgumentException("Usuário ou senha inválidos.");
 
             return _jwtService.GenerateJwtToken(TipoUsuarioSistema.USUARIO.ToString(), user.Id.ToString());
