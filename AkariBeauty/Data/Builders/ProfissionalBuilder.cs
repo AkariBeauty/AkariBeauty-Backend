@@ -49,7 +49,7 @@ public class ProfissionalBuilder
 
             m.HasData(new List<Profissional>
             {
-                new Profissional(1, "Administrador", "00000000000", 0, "admin", "123456", "00000000000", 1, StatusProfissional.ATIVO),
+                new Profissional(1, "Administrador", "00000000000", 0, "admin", "admin", "00000000000", 1, StatusProfissional.ATIVO),
                 new Profissional(2, "Recepcionista", "00000000000", 0, "recepcionista", "123456", "00000000000", 1, StatusProfissional.ATIVO),
                 new Profissional(3, "Profissional", "00000000000", 0, "profissional", "123456", "00000000000", 1, StatusProfissional.ATIVO)
             });

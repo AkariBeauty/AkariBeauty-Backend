@@ -5,6 +5,7 @@ using AkariBeauty.Data.Interfaces;
 using AkariBeauty.Data.Repositories;
 using AkariBeauty.Services.Entities;
 using AkariBeauty.Services.Interfaces;
+using AkariBeauty.Services.Types;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +39,13 @@ builder.Services.AddSwaggerGen(c =>
         Type = "string",
         Format = "time",
         Example = new Microsoft.OpenApi.Any.OpenApiString("00:00:00")
+    });
+
+    c.MapType<DateOnly>(() => new Microsoft.OpenApi.Models.OpenApiSchema
+    {
+        Type = "string",
+        Format = "date",
+        Example = new Microsoft.OpenApi.Any.OpenApiString("2025-12-31")
     });
 
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Akari Beauty API", Version = "v1" });
@@ -90,9 +98,11 @@ builder.Services.AddCors(options =>
 });
 
 // Para APIs
+// Para APIs
 builder.Services.Configure<JsonOptions>(options =>
 {
     options.SerializerOptions.Converters.Add(new TimeOnlyJsonConverter());
+    options.SerializerOptions.Converters.Add(new DateOnlyJsonConverter()); // <-- ADICIONE ESTA LINHA
 });
 
 // AutoMapper

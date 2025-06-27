@@ -44,7 +44,7 @@ namespace AkariBeauty.Data.Builders
         {
                 new Cliente(1, "Joana Silva", "123.456.789-00", "SP", "São Paulo", "Centro", "Rua da Beleza", 456, "joana", "1234", "(11) 91234-5678"),
                 new Cliente(2, "Marcos Oliveira", "987.654.321-00", "RJ", "Rio de Janeiro", "Copacabana", "Avenida das Acácias", 789, "marcos", "abcd", "(21) 98765-4321"),
-                new Cliente(3, "Ana Costa", "456.123.789-11", "MG", "Belo Horizonte", "Savassi", "Rua das Flores", 101, "ana.costa", "senha123", "(31) 99876-5432")
+                new Cliente(3, "Administrador", "456.123.789-11", "MG", "Belo Horizonte", "Savassi", "Rua das Flores", 101, "admin", "admin", "(31) 99876-5432")
             });
         }
     }

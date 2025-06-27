@@ -7,10 +7,11 @@ namespace AkariBeauty.Objects.Dtos.Entities
         public int Id { get; set; }
         public DateOnly Data { get; set; }
         public TimeOnly Hora { get; set; }
+        public int DiaSemana { get; set; }
         public float Valor { get; set; }
         public float Comissao { get; set; }
         public StatusAgendamento StatusAgendamento { get; set; }
         public int ClienteId { get; set; }
-        public int EmpresaId { get; set; }
+        public int ProfissionalId { get; set; }
     }
 }
