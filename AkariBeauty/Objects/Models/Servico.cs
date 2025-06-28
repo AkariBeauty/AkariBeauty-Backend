@@ -1,8 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using AkariBeauty.Objects.Enums;
 using AkariBeauty.Objects.Relationship;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 
 
@@ -20,6 +22,10 @@ namespace AkariBeauty.Objects.Models
 
         [Column("descricao")]
         public string Descricao { get; set; }
+
+        [Column("tempobase")]
+        [JsonConverter(typeof(TimeOnlyConverter))]
+        public TimeOnly TempoBase { get; set; }
 
         [Column("valorbase")]
         public float ValorBase { get; set; }
@@ -42,12 +48,13 @@ namespace AkariBeauty.Objects.Models
 
         public Servico() { }
 
-        public Servico(int id, string servicoPrestado, string descricao, float valorBase, int empresaId, int categoriaServicoId)
+        public Servico(int id, string servicoPrestado, string descricao, float valorBase, TimeOnly timeBase, int empresaId, int categoriaServicoId)
         {
             Id = id;
             ServicoPrestado = servicoPrestado;
             Descricao = descricao;
             ValorBase = valorBase;
+            TempoBase = timeBase;
             EmpresaId = empresaId;
             CategoriaServicoId = categoriaServicoId;
         }

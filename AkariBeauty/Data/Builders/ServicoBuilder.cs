@@ -36,12 +36,15 @@ namespace AkariBeauty.Data.Builders
                 .HasForeignKey(cs => cs.CategoriaServicoId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Servico>()
+                .Property(s => s.TempoBase)
+                .IsRequired();
 
             modelBuilder.Entity<Servico>().HasData(new List<Servico>
             {
-                new Servico(1, "Corte de Cabelo", "Corte masculino e feminino", 50.00f,1, 1),
-                new Servico(2, "Manicure", "Manicure completa", 30.00f, 1, 1),
-                new Servico(3, "Massagem Relaxante", "Sessão de massagem relaxante", 100.00f, 1, 1),
+                new Servico(1, "Corte de Cabelo", "Corte masculino e feminino", 50.00f, new TimeOnly(0, 30, 0), 1, 1),
+                new Servico(2, "Manicure", "Manicure completa", 30.00f, new TimeOnly(0, 30, 0), 1, 1),
+                new Servico(3, "Massagem Relaxante", "Sessão de massagem relaxante", 100.00f, new TimeOnly(0, 30, 0), 1, 1),
             });
         }
     }
