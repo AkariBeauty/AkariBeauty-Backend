@@ -6,6 +6,6 @@ namespace AkariBeauty.Services.Interfaces
 {
     public interface IAgendamentoService : IGenericoService<Agendamento, AgendamentoDTO>
     {
-        Task<IEnumerable<AgendamentoDTO>> GetAgendamentosPorData(RequestAgendamentoForDateDTO request, string token);
+        Task<IEnumerable<AgendamentoDTO>> GetAgendamentosPorData(RequestAgendamentoForDateDTO request);
     }
 }

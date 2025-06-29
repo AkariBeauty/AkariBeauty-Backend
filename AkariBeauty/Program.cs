@@ -3,6 +3,7 @@ using AkariBeauty.Controllers;
 using AkariBeauty.Data;
 using AkariBeauty.Data.Interfaces;
 using AkariBeauty.Data.Repositories;
+using AkariBeauty.Jwt;
 using AkariBeauty.Services.Entities;
 using AkariBeauty.Services.Interfaces;
 using AkariBeauty.Services.Types;
@@ -107,6 +108,10 @@ builder.Services.Configure<JsonOptions>(options =>
 
 // AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<JwtService>();
 
 // Injeção de Dependências
 builder.Services.AddScoped<IServicoRepository, ServicoRepository>();

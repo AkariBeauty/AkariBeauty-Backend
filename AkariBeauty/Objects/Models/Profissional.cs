@@ -26,7 +26,7 @@ public class Profissional
     public string Telefone { get; set; }
     [Column("status")]
     public StatusProfissional Status { get; set; }
-    
+
     [JsonIgnore]
     public Empresa? Empresa { get; set; }
     [Column("empresa_id")]
@@ -53,3 +53,10 @@ public class Profissional
     }
 
 }
+
+// from agendamento in _context.Agendamentos
+// join profissional in _context.Profissionais on agendamento.ProfissionalId equals profissional.Id
+// join empresa in _context.Empresas on profissional.EmpresaId equals empresa.Id
+// join usuario in _context.Usuarios on empresa.Id equals usuario.EmpresaId
+// where usuario.Id == idusuario
+// select agendamento;

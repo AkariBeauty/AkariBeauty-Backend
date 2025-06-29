@@ -15,19 +15,19 @@
             private readonly IMapper _mapper;
             private readonly JwtService _jwt;
 
-            public AgendamentoService(IAgendamentoRepository repository, IUsuarioRepository usuario, IMapper mapper, IConfiguration configuration) : base(repository, mapper)
+            public AgendamentoService(IAgendamentoRepository repository, IUsuarioRepository usuario, IMapper mapper, JwtService jwt) : base(repository, mapper)
             {
                 _agendamentoRepository = repository;
                 _usuario = usuario;
                 _mapper = mapper;
-                _jwt = new JwtService(configuration);
+                _jwt = jwt;
             }
 
-            public async Task<IEnumerable<AgendamentoDTO>> GetAgendamentosPorData(RequestAgendamentoForDateDTO request, string token)
+            public async Task<IEnumerable<AgendamentoDTO>> GetAgendamentosPorData(RequestAgendamentoForDateDTO request)
             {
-                var idusuario = _jwt.GetInfoToken(token)["identifier"];
+                var idusuario = _jwt.GetInfoToken().Id;
 
-                var agendamentos = await _agendamentoRepository.GetAgendamentos(int.Parse(idusuario));
+                var agendamentos = await _agendamentoRepository.GetAgendamentos(idusuario);
 
                 if (agendamentos == null || !agendamentos.Any())
                     return new List<AgendamentoDTO>();
@@ -74,7 +74,8 @@
 
                 return _mapper.Map<IEnumerable<AgendamentoDTO>>(agendamentos.ToList());
             }
-            public (DateOnly Inicio, DateOnly Fim) ObterInicioEFimDaSemana(int ano, int mes, int numeroDaSemana)
+
+        public (DateOnly Inicio, DateOnly Fim) ObterInicioEFimDaSemana(int ano, int mes, int numeroDaSemana)
             {
                 if (numeroDaSemana < 1 || numeroDaSemana > 5)
                 {

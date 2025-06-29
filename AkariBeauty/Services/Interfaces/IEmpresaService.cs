@@ -7,5 +7,6 @@ namespace AkariBeauty.Services.Interfaces
     {
         new Task<EmpresaDTO> Create(Empresa empresa);
         Task<UsuarioDTO> GetUser(string token);
+        Task<int> GetNovosClientes(DateOnly only);
     }
 }

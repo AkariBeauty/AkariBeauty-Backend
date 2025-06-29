@@ -126,5 +126,23 @@ namespace AkariBeauty.Controllers
                 return StatusCode(500, "Erro ao acessar o servidor: " + ex.Message);
             }
         }
+
+        [HttpGet("novos-clientes")]
+        public async Task<IActionResult> GetNovosClientes([FromQuery] DateOnly data)
+        {
+            try
+            {
+                var agendamentos = await _empresaService.GetNovosClientes(data);
+                return Ok(agendamentos);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro ao acessar o servidor: " + ex.Message);
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AkariBeauty.Data.Interfaces;
+using AkariBeauty.Objects.Enums;
 using AkariBeauty.Objects.Models;
 using AkariBeauty.Services.Types;
 using Microsoft.EntityFrameworkCore;
@@ -20,5 +21,28 @@ namespace AkariBeauty.Data.Repositories
             return await _dbSet.FirstOrDefaultAsync(e => e.Cnpj == cnpj);
         }
 
+        public async Task<IEnumerable<Cliente>> GetNovosClientes(DateOnly only, int idusuario)
+        {
+            var cliente = await _context.Clientes
+            .Where(c =>
+                c.Agendamentos.Where(a => a.StatusAgendamento == StatusAgendamento.REALIZADO)
+                    .Select(a => a.ClienteId)
+                    .Contains(c.Id)
+                &&
+                !c.Agendamentos
+                        .Where(a => a.Data < only
+                            && a.Profissional != null
+                            && a.Profissional.Empresa != null
+                            && a.Profissional.Empresa.Usuarios != null
+                            && a.Profissional.Empresa.Usuarios.Any(u => u.Id == idusuario)
+                        )
+                        .Select(a => a.ClienteId)
+                        .Distinct()
+                        .Contains(c.Id)
+            ).ToListAsync();
+
+            return cliente;
+
+        }
     }
 }

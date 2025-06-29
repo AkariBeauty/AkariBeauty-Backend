@@ -6,6 +6,7 @@ using AkariBeauty.Objects.Models;
 using AkariBeauty.Objects.Relationship;
 using AkariBeauty.Services.Entities.Enum;
 using AkariBeauty.Services.Interfaces;
+using AkariBeauty.Utils;
 using AutoMapper;
 
 namespace AkariBeauty.Services.Entities;
@@ -20,10 +21,10 @@ public class ProfissionalService : GenericoService<Profissional, ProfissionalDTO
     private readonly IMapper _mapper;
     private readonly JwtService _jwtService;
 
-    public ProfissionalService(IProfissionalRepository repository, IServicoRepository servicoRepository, IConfiguration configuration, IProfissionalServicoRepository profissionalServicoRepository, IEmpresaRepository empresaRepository, IMapper mapper) : base(repository, mapper)
+    public ProfissionalService(IProfissionalRepository repository, IServicoRepository servicoRepository, JwtService jwt, IProfissionalServicoRepository profissionalServicoRepository, IEmpresaRepository empresaRepository, IMapper mapper) : base(repository, mapper)
     {
         _repository = repository;
-        _jwtService = new JwtService(configuration);
+        _jwtService = jwt;
         _mapper = mapper;
         _profissionalServicoRepository = profissionalServicoRepository;
         _servicoService = servicoRepository;
@@ -82,7 +83,11 @@ public class ProfissionalService : GenericoService<Profissional, ProfissionalDTO
         if (user.Senha != request.Password)
             throw new ArgumentException("Usuário ou senha inválidos.");
 
-        return _jwtService.GenerateJwtToken(TipoUsuarioSistema.PROFISSIONAL.ToString(), user.Id.ToString());
+        InfoToken infoToken = new InfoToken();
+        infoToken.Id = user.Id;
+        infoToken.Tipo = TipoUsuarioSistema.PROFISSIONAL;
+
+        return _jwtService.GenerateJwtToken(infoToken);
     }
 
     public async Task RemoveServico(int idProfissional, int idServico)

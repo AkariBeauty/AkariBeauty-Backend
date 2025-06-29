@@ -114,7 +114,7 @@ namespace AkariBeauty.Controllers
 
                 requestAgendamento.StatusAgendamento = filtro.StatusAgendamento;
 
-                var agendamentos = await _agendamentoService.GetAgendamentosPorData(requestAgendamento, token);
+                var agendamentos = await _agendamentoService.GetAgendamentosPorData(requestAgendamento);
                 return Ok(agendamentos);
             }
             catch (ArgumentException ex)

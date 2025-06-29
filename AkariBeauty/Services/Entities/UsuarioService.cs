@@ -6,6 +6,7 @@ using AkariBeauty.Objects.Enums;
 using AkariBeauty.Objects.Models;
 using AkariBeauty.Services.Entities.Enum;
 using AkariBeauty.Services.Interfaces;
+using AkariBeauty.Utils;
 using AutoMapper;
 
 namespace AkariBeauty.Services.Entities
@@ -17,10 +18,10 @@ namespace AkariBeauty.Services.Entities
 
         private readonly JwtService _jwtService;
 
-        public UsuarioService(IUsuarioRepository repository, IConfiguration configuration, IMapper mapper) : base(repository, mapper)
+        public UsuarioService(IUsuarioRepository repository, JwtService jwt, IMapper mapper) : base(repository, mapper)
         {
             _usuarioRepository = repository;
-            _jwtService = new JwtService(configuration);
+            _jwtService = jwt;
             _mapper = mapper;
         }
 
@@ -37,7 +38,11 @@ namespace AkariBeauty.Services.Entities
             if (user.TipoUsuario == TipoUsuario.ADMIN)
                 throw new ArgumentException("Usuário ou senha inválidos.");
 
-            return _jwtService.GenerateJwtToken(TipoUsuarioSistema.USUARIO.ToString(), user.Id.ToString());
+            InfoToken infoToken = new InfoToken();
+            infoToken.Id = user.Id;
+            infoToken.Tipo = TipoUsuarioSistema.USUARIO;
+
+            return _jwtService.GenerateJwtToken(infoToken);
         }
     }
 }

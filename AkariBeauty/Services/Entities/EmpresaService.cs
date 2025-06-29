@@ -1,12 +1,12 @@
 ﻿using AkariBeauty.Controllers.Dtos;
 using AkariBeauty.Data.Interfaces;
-using AkariBeauty.Data.Repositories;
 using AkariBeauty.Jwt;
 using AkariBeauty.Objects.Dtos.Entities;
 using AkariBeauty.Objects.Enums;
 using AkariBeauty.Objects.Models;
 using AkariBeauty.Services.Entities.Enum;
 using AkariBeauty.Services.Interfaces;
+using AkariBeauty.Utils;
 using AutoMapper;
 
 namespace AkariBeauty.Services.Entities
@@ -21,11 +21,11 @@ namespace AkariBeauty.Services.Entities
 
         private readonly JwtService _jwtService;
 
-        public EmpresaService(IEmpresaRepository repository, IUsuarioRepository usuarioRepository, IConfiguration configuration, IMapper mapper) : base(repository, mapper)
+        public EmpresaService(IEmpresaRepository repository, IUsuarioRepository usuarioRepository, JwtService jwtService, IConfiguration configuration, IMapper mapper) : base(repository, mapper)
         {
             _empresaRepository = repository;
             _usuarioRepository = usuarioRepository;
-            _jwtService = new JwtService(configuration);
+            _jwtService = jwtService;
             _mapper = mapper;
         }
 
@@ -59,10 +59,17 @@ namespace AkariBeauty.Services.Entities
 
         }
 
+        public async Task<int> GetNovosClientes(DateOnly only)
+        {
+            var user = _jwtService.GetInfoToken().Id;
+            IEnumerable<Cliente> clientes = await _empresaRepository.GetNovosClientes(only, user);
+
+            return clientes.Count();
+        }
+
         public async Task<UsuarioDTO> GetUser(string token)
         {
-            var infoToken = _jwtService.GetInfoToken(token);
-            var id = int.Parse(infoToken["identifier"]);
+            var id = _jwtService.GetInfoToken().Id;
 
             var user = await _usuarioRepository.GetById(id);
 
@@ -90,8 +97,12 @@ namespace AkariBeauty.Services.Entities
             if (usuario.Senha != request.Password)
                 throw new ArgumentException("Usuário ou senha inválidos.");
 
+            InfoToken infoToken = new InfoToken();
+            infoToken.Id = usuario.Id;
+            infoToken.Tipo = TipoUsuarioSistema.ADMINISTRADOR;
+
             // Retornar o token
-            return _jwtService.GenerateJwtToken(TipoUsuarioSistema.ADMINISTRADOR.ToString(), usuario.Id.ToString());
+            return _jwtService.GenerateJwtToken(infoToken);
         }
     }
 }

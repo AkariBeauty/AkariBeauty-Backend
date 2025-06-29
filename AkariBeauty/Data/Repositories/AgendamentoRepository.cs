@@ -30,6 +30,8 @@ namespace AkariBeauty.Data.Repositories
             // O .Distinct() remove as duplicatas criadas pelo JOIN com a tabela de usuários
             // E o ToListAsync() executa a consulta no banco de dados.
             return await query.Distinct().OrderBy(a => a.Data).ToListAsync();
-        } 
+        }
+
+        
     }
 }
