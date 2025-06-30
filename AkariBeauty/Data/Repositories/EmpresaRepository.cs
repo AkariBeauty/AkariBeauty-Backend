@@ -1,6 +1,7 @@
 ﻿using AkariBeauty.Data.Interfaces;
 using AkariBeauty.Objects.Enums;
 using AkariBeauty.Objects.Models;
+using AkariBeauty.Objects.Relationship;
 using AkariBeauty.Services.Types;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,30 @@ namespace AkariBeauty.Data.Repositories
         public async Task<Empresa> FindByCnpj(string cnpj)
         {
             return await _dbSet.FirstOrDefaultAsync(e => e.Cnpj == cnpj);
+        }
+
+        public async Task<IEnumerable<Profissional>> GetAgendamentosPorProfissionalEData(int idusuario, DateOnly data)
+        {
+            var agendamentos = await _context.Profissionais
+            .Include(a => a.Agendamentos
+                .Where(
+                    p =>
+                        (
+                            p.StatusAgendamento == StatusAgendamento.CONFIRMADO
+                            || p.StatusAgendamento == StatusAgendamento.PENDENTE
+                            || p.StatusAgendamento == StatusAgendamento.COBRADO
+                            || p.StatusAgendamento == StatusAgendamento.REALIZADO
+                        )
+                    &&
+                        p.Data == data
+                )
+            )
+            .Include(a => a.ProfissionalServicos)
+            .Where(
+                    p => p.Empresa.Usuarios.Any(u => u.Id == idusuario)
+                ).ToListAsync();
+
+            return agendamentos;
         }
 
         public async Task<IEnumerable<Cliente>> GetNovosClientes(DateOnly only, int idusuario)

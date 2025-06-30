@@ -67,6 +67,32 @@ namespace AkariBeauty.Services.Entities
             return clientes.Count();
         }
 
+        public async Task<float> GetTaxaTotalDeOcupacao(DateOnly only)
+        {
+            var user = _jwtService.GetInfoToken().Id;
+
+            var profissionais = await _empresaRepository.GetAgendamentosPorProfissionalEData(user, only);
+            var usuario = await _usuarioRepository.GetById(user);
+            var empresa = await _empresaRepository.GetById(usuario.EmpresaId);
+
+            if (profissionais == null)
+                return 0;
+
+            var tempoOcupacao = empresa.HoraInicial - empresa.HoraFinal;
+
+            var tempoOcupado = new TimeOnly();
+
+            foreach (var profissional in profissionais)
+            {
+                foreach (var item in profissional.Agendamentos)
+                {
+
+                }
+            }
+
+            return 0;
+        }
+
         public async Task<UsuarioDTO> GetUser(string token)
         {
             var id = _jwtService.GetInfoToken().Id;

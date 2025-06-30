@@ -6,5 +6,6 @@ namespace AkariBeauty.Data.Interfaces
     {
         Task<Empresa> FindByCnpj(string cnpj);
         Task<IEnumerable<Cliente>> GetNovosClientes(DateOnly only, int idusuario);
+        Task<IEnumerable<Profissional>> GetAgendamentosPorProfissionalEData(int idusuario, DateOnly only);
     }
 }

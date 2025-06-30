@@ -144,5 +144,23 @@ namespace AkariBeauty.Controllers
                 return StatusCode(500, "Erro ao acessar o servidor: " + ex.Message);
             }
         }
+
+        [HttpGet("ocupacao-total")]
+        public async Task<IActionResult> GetOcupacaoTotal([FromQuery] DateOnly data)
+        {
+            try
+            {
+                var agendamentos = await _empresaService.GetTaxaTotalDeOcupacao(data);
+                return Ok(agendamentos);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro ao acessar o servidor: " + ex.Message);
+            }
+        }
     }
 }
