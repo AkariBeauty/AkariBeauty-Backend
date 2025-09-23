@@ -36,6 +36,7 @@ namespace AkariBeauty.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Post(Cliente cliente)
         {
             try
