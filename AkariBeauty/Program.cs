@@ -3,6 +3,7 @@ using AkariBeauty.Controllers;
 using AkariBeauty.Data;
 using AkariBeauty.Data.Interfaces;
 using AkariBeauty.Data.Repositories;
+using AkariBeauty.Jwt;
 using AkariBeauty.Services.Entities;
 using AkariBeauty.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,16 +14,10 @@ using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// 🔥 REMOVIDO: Configuração de Authentication/JWT
-
-// Configuração do Banco de Dados
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
-
-// Colocando todas as rotas em lowercase(letras minusculas)
 builder.Services.Configure<RouteOptions>(options =>
 {
     options.LowercaseUrls = true;
@@ -30,7 +25,6 @@ builder.Services.Configure<RouteOptions>(options =>
 });
 
 
-// Configuração do Swagger
 builder.Services.AddSwaggerGen(c =>
 {
     c.MapType<TimeOnly>(() => new Microsoft.OpenApi.Models.OpenApiSchema
@@ -42,7 +36,6 @@ builder.Services.AddSwaggerGen(c =>
 
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Akari Beauty API", Version = "v1" });
 
-    // Configurando botão de Autenticação no Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -82,7 +75,8 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("MyPolicy", policy =>
     {
-            .WithOrigins("http://localhost:3000", "http://localhost:5173", "http://localhost:5174")")
+        policy
+            .WithOrigins("http://localhost:3000", "http://localhost:5173", "http://localhost:5174")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials();
@@ -109,7 +103,7 @@ builder.Services.AddScoped<ICategoriaServicoRepository, CategoriaServicoReposito
 builder.Services.AddScoped<IProfissionalRepository, ProfissionalRepository>();
 builder.Services.AddScoped<IProfissionalServicoRepository, ProfissionalServicoRepository>();
 
-
+builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<IProfissionalServicoService, ProfissionalServicoService>();
 builder.Services.AddScoped<IProfissionalService, ProfissionalService>();
 builder.Services.AddScoped<ICategoriaServicoService, CategoriaServicoService>();
@@ -120,7 +114,6 @@ builder.Services.AddScoped<IServicoService, ServicoService>();
 builder.Services.AddScoped<IAgendamentoService, AgendamentoService>();
 builder.Services.AddScoped<IServicoAgendamentoService, ServicoAgendamentoService>();
 
-// Configuração para escutar todas as interfaces de rede **sem HTTPS**
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(8080); // Porta HTTP
@@ -151,10 +144,8 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-// Construção do App
 var app = builder.Build();
 
-// Middlewares
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
