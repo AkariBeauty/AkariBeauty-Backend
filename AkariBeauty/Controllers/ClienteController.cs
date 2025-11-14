@@ -78,14 +78,14 @@ namespace AkariBeauty.Controllers
             return Ok("Cliente removido com sucesso");
         }
 
-        [HttpPatch("login")]
+        [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(RequestLoginDTO request)
         {
             try
             {
                 var token = await _clienteService.Login(request);
-                return Ok(token);
+                return Ok(new { token });
             }
             catch (ArgumentException ex)
             {

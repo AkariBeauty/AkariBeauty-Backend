@@ -1,7 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using AkariBeauty.Objects.Enums;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AkariBeauty.Jwt;
@@ -18,7 +17,15 @@ public class JwtService
     public string GenerateJwtToken(string type, string identifier)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
+        var keyValue = jwtSettings["Key"] ?? throw new InvalidOperationException("JwtSettings:Key não configurado.");
+        var issuer = jwtSettings["Issuer"] ?? throw new InvalidOperationException("JwtSettings:Issuer não configurado.");
+        var audience = jwtSettings["Audience"] ?? throw new InvalidOperationException("JwtSettings:Audience não configurado.");
+        var expireConfig = jwtSettings["ExpireMinutes"] ?? throw new InvalidOperationException("JwtSettings:ExpireMinutes não configurado.");
+
+        if (!double.TryParse(expireConfig, out var expireMinutes))
+            throw new InvalidOperationException("JwtSettings:ExpireMinutes inválido.");
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyValue));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
@@ -28,10 +35,10 @@ public class JwtService
         };
 
         var token = new JwtSecurityToken(
-            issuer: jwtSettings["Issuer"],
-            audience: jwtSettings["Audience"],
+            issuer: issuer,
+            audience: audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(double.Parse(jwtSettings["ExpireMinutes"])),
+            expires: DateTime.UtcNow.AddMinutes(expireMinutes),
             signingCredentials: creds
         );
 
