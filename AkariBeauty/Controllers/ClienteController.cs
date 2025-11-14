@@ -4,6 +4,7 @@ using AkariBeauty.Objects.Models;
 using AkariBeauty.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace AkariBeauty.Controllers
 {
@@ -95,6 +96,30 @@ namespace AkariBeauty.Controllers
             {
                 return StatusCode(500, "Erro ao acessar o servidor: " + ex.Message);
             };
+        }
+
+        [HttpPost("profile/change-password")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordDTO request)
+        {
+            var identifier = User.FindFirstValue("identifier");
+            if (!int.TryParse(identifier, out var clienteId))
+            {
+                return Unauthorized("Usuário não autenticado.");
+            }
+
+            try
+            {
+                await _clienteService.ChangePasswordAsync(clienteId, request.CurrentPassword, request.NewPassword);
+                return NoContent();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Erro ao alterar senha.");
+            }
         }
     }
 }

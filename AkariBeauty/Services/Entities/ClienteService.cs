@@ -39,5 +39,22 @@ namespace AkariBeauty.Services.Entities
             // Retornar o token
             return _jwtService.GenerateJwtToken(TipoUsuarioSistema.CLIENTE.ToString(), cliente.Id.ToString());
         }
+
+        public async Task ChangePasswordAsync(int clienteId, string currentPassword, string newPassword)
+        {
+            if (string.IsNullOrWhiteSpace(newPassword))
+                throw new ArgumentException("Nova senha inválida.");
+
+            var cliente = await _clienteRepository.GetById(clienteId);
+
+            if (cliente == null)
+                throw new ArgumentException("Cliente não encontrado.");
+
+            if (!string.Equals(cliente.Senha, currentPassword))
+                throw new ArgumentException("Senha atual incorreta.");
+
+            cliente.Senha = newPassword;
+            await _clienteRepository.Update(cliente);
+        }
     }
 }

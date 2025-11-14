@@ -7,5 +7,6 @@ namespace AkariBeauty.Services.Interfaces
     public interface IClienteService : IGenericoService<Cliente, ClienteDTO>
     {
         Task<string> Login(RequestLoginDTO request);
+        Task ChangePasswordAsync(int clienteId, string currentPassword, string newPassword);
     }
 }
