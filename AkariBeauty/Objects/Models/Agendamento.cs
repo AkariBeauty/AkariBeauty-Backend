@@ -34,14 +34,17 @@ namespace AkariBeauty.Objects.Models
         [JsonIgnore]
         public Cliente Cliente { get; set; }
 
+        [Column("observacao")]
+        public string? Observacao { get; set; }
+
+        [Column("profissional_id")]
+        public int? ProfissionalId { get; set; }
+
+        [JsonIgnore]
+        public Profissional? Profissional { get; set; }
+
         // Serviço
         public ICollection<Servico> Servicos { get; set; } = new List<Servico>();
-
-        // TODO: Profissional
-        // [Column("profissional_id")][ForeignKey("Id")]
-        // public int ProfissionalId { get; set; }
-        // [JsonIgnore]
-        // public Profissional Profissional { get; set; }
 
         // TODO: ContaReceber
         // [JsonIgnore]
@@ -49,7 +52,7 @@ namespace AkariBeauty.Objects.Models
 
         public Agendamento() { }
 
-        public Agendamento(int id, DateOnly data, TimeOnly hora, float valor, float comissao, StatusAgendamento statusAgendamento, int clienteId)
+        public Agendamento(int id, DateOnly data, TimeOnly hora, float valor, float comissao, StatusAgendamento statusAgendamento, int clienteId, int? profissionalId = null, string? observacao = null)
         {
             Id = id;
             Data = data;
@@ -58,6 +61,8 @@ namespace AkariBeauty.Objects.Models
             Comissao = comissao;
             StatusAgendamento = statusAgendamento;
             ClienteId = clienteId;
+            ProfissionalId = profissionalId;
+            Observacao = observacao;
         }
     } 
 }

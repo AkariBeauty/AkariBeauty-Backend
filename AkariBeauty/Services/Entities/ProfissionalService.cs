@@ -7,6 +7,7 @@ using AkariBeauty.Authentication;               // JwtService, TokenPayload
 using AkariBeauty.Controllers.Dtos;
 using AkariBeauty.Data.Interfaces;
 using AkariBeauty.Objects.Dtos.Entities;
+using AkariBeauty.Objects.Dtos.Profissionais;
 using AkariBeauty.Objects.Enums;               // TipoUsuario
 using AkariBeauty.Objects.Models;
 using AkariBeauty.Objects.Relationship;
@@ -109,6 +110,25 @@ namespace AkariBeauty.Services.Entities
                 throw new ArgumentException("Esse profissional nao possui esse servico.");
 
             await _profissionalServicoRepository.Remove(entity);
+        }
+
+        public async Task<IEnumerable<ProfissionalComServicosDTO>> GetByServicoId(int servicoId)
+        {
+            if (servicoId <= 0)
+                throw new ArgumentException("Serviço inválido.");
+
+            var profissionais = await _repository.GetByServicoId(servicoId);
+            return profissionais.Select(profissional => new ProfissionalComServicosDTO
+            {
+                Id = profissional.Id,
+                Nome = profissional.Nome,
+                Telefone = profissional.Telefone,
+                ProfissionalServicos = profissional.ProfissionalServicos?.Select(ps => new ProfissionalComServicosRelacaoDTO
+                {
+                    ServicoId = ps.ServicoId,
+                    Servico = ps.Servico == null ? null : new ServicoNomeDTO { ServicoPrestado = ps.Servico.ServicoPrestado }
+                }) ?? Enumerable.Empty<ProfissionalComServicosRelacaoDTO>()
+            });
         }
 
         public override async Task<ProfissionalDTO> GetById(int id)

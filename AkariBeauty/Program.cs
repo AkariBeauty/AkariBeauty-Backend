@@ -146,6 +146,20 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    try
+    {
+        SchemaBootstrapper.EnsureLatestSchema(dbContext);
+    }
+    catch (Exception ex)
+    {
+        Console.Error.WriteLine($"Falha ao garantir o esquema do banco: {ex.Message}");
+        throw;
+    }
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();

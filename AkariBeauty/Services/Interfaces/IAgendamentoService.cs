@@ -8,5 +8,6 @@ namespace AkariBeauty.Services.Interfaces
     {
         Task<IEnumerable<AgendamentoDetalheDTO>> GetByClienteId(int clienteId);
         Task<AgendamentoDetalheDTO> CreateAgendamentoAsync(CriarAgendamentoRequest request);
+        Task<IEnumerable<DisponibilidadeDiaDTO>> ListarDisponibilidadeAsync(DisponibilidadeFiltro filtro);
     }
 }

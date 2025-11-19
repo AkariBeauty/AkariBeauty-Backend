@@ -17,7 +17,10 @@ public class ProfissionalServicoRepository : GenericoRepository<ProfissionalServ
 
     public async Task<ProfissionalServico> GetProfissionalAndServico(int idProfissional, int idServico)
     {
-        return await _dbSet.FirstOrDefaultAsync(e => e.ProfissionalId == idProfissional && e.ServicoId == idServico) ?? null;
+        return await _dbSet
+            .Include(e => e.Profissional)
+            .Include(e => e.Servico)
+            .FirstOrDefaultAsync(e => e.ProfissionalId == idProfissional && e.ServicoId == idServico) ?? null;
     } 
 
     public async Task<IEnumerable<ProfissionalServico>> GetProfissionalServicoForProfissional(int idProfissional)

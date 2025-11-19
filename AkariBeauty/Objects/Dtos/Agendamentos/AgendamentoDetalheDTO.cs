@@ -9,4 +9,6 @@ public class AgendamentoDetalheDTO
     public float Valor { get; set; }
     public float Comissao { get; set; }
     public IEnumerable<ServicoResumoDTO> Servicos { get; set; } = Enumerable.Empty<ServicoResumoDTO>();
+    public ProfissionalResumoDTO? Profissional { get; set; }
+    public string? Observacao { get; set; }
 }

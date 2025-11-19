@@ -40,6 +40,42 @@ namespace AkariBeauty.Controllers
             return Ok(itens);
         }
 
+        [HttpGet("disponibilidade")]
+        public async Task<IActionResult> GetDisponibilidade([FromQuery] DisponibilidadeQuery query)
+        {
+            if (query.ServicoId <= 0)
+            {
+                return BadRequest("O parâmetro servicoId é obrigatório.");
+            }
+
+            try
+            {
+                var filtro = new DisponibilidadeFiltro
+                {
+                    ServicoId = query.ServicoId,
+                    ProfissionalId = query.ProfissionalId,
+                    Inicio = ParseDate(query.Inicio),
+                    Fim = ParseDate(query.Fim)
+                };
+
+                if (filtro.Inicio.HasValue && filtro.Fim.HasValue && filtro.Inicio > filtro.Fim)
+                {
+                    return BadRequest("A data inicial não pode ser maior do que a data final.");
+                }
+
+                var disponibilidade = await _agendamentoService.ListarDisponibilidadeAsync(filtro);
+                return Ok(disponibilidade);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Ocorreu um erro ao calcular a disponibilidade.");
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CriarAgendamentoRequest request)
         {
@@ -80,6 +116,36 @@ namespace AkariBeauty.Controllers
             {
                 return StatusCode(500, "Ocorreu um erro ao tentar cancelar o agendamento");
             }
+        }
+
+        private static DateOnly? ParseDate(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return null;
+            }
+
+            if (DateOnly.TryParse(value, out var parsed))
+            {
+                return parsed;
+            }
+
+            return null;
+        }
+
+        public class DisponibilidadeQuery
+        {
+            [FromQuery(Name = "servicoId")]
+            public int ServicoId { get; set; }
+
+            [FromQuery(Name = "profissionalId")]
+            public int? ProfissionalId { get; set; }
+
+            [FromQuery(Name = "inicio")]
+            public string? Inicio { get; set; }
+
+            [FromQuery(Name = "fim")]
+            public string? Fim { get; set; }
         }
     }
 }

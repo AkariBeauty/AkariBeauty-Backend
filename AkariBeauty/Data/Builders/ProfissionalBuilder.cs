@@ -51,7 +51,14 @@ public class ProfissionalBuilder
             {
                 new Profissional(1, "Administrador", "00000000000", 0, "admin", "123456", "00000000000", 1, StatusProfissional.ATIVO),
                 new Profissional(2, "Recepcionista", "00000000000", 0, "recepcionista", "123456", "00000000000", 1, StatusProfissional.ATIVO),
-                new Profissional(3, "Profissional", "00000000000", 0, "profissional", "123456", "00000000000", 1, StatusProfissional.ATIVO)
+                new Profissional(3, "Profissional", "00000000000", 0, "profissional", "123456", "00000000000", 1, StatusProfissional.ATIVO),
+                new Profissional(4, "Lívia Andrade", "11122233344", 3500f, "livia.andrade", "senha123", "11987654321", 1, StatusProfissional.ATIVO),
+                new Profissional(5, "Marcos Diniz", "22233344455", 3200f, "marcos.diniz", "senha123", "11912345678", 4, StatusProfissional.ATIVO),
+                new Profissional(6, "Renata Freitas", "33344455566", 4000f, "renata.freitas", "senha123", "21987654321", 6, StatusProfissional.ATIVO),
+                new Profissional(7, "Camila Prado", "44455566677", 3800f, "camila.prado", "senha123", "41999887766", 6, StatusProfissional.ATIVO),
+                new Profissional(8, "Diego Santana", "55566677788", 3100f, "diego.santana", "senha123", "11988776655", 8, StatusProfissional.ATIVO),
+                new Profissional(9, "Elaine Costa", "66677788899", 3600f, "elaine.costa", "senha123", "71977665544", 9, StatusProfissional.ATIVO),
+                new Profissional(10, "Felipe Duarte", "77788899900", 3400f, "felipe.duarte", "senha123", "48966554433", 7, StatusProfissional.ATIVO)
             });
 
         });

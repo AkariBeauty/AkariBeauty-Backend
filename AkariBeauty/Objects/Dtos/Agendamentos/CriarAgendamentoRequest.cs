@@ -11,6 +11,9 @@ public class CriarAgendamentoRequest
     public int ServicoId { get; set; }
 
     [Required]
+    public int ProfissionalId { get; set; }
+
+    [Required]
     public DateTime DataHora { get; set; }
 
     public string? Observacao { get; set; }
