@@ -7,4 +7,5 @@ public interface IProfissionalRepository : IGenericoRepository<Profissional>
 {
     Task<Profissional> GetByLogin(string login);
     Task<Profissional> GetByCpf(string cpf);
+    Task<IEnumerable<Profissional>> GetByServicoId(int servicoId);
 }

@@ -1,9 +1,9 @@
-﻿using AkariBeauty.Authentication;
+﻿// Program.cs
+using AkariBeauty.Authentication;
 using AkariBeauty.Controllers;
 using AkariBeauty.Data;
 using AkariBeauty.Data.Interfaces;
 using AkariBeauty.Data.Repositories;
-using AkariBeauty.Jwt;
 using AkariBeauty.Services.Entities;
 using AkariBeauty.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -11,23 +11,43 @@ using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// DbContext (PostgreSQL)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
-builder.Services.Configure<RouteOptions>(options =>
+// Urls minúsculas
+builder.Services.Configure<RouteOptions>(o =>
 {
-    options.LowercaseUrls = true;
-    options.LowercaseQueryStrings = true;
+    o.LowercaseUrls = true;
+    o.LowercaseQueryStrings = true;
 });
 
+// Controllers + JSON (uma vez só)
+builder.Services
+    .AddControllers()
+    .AddApplicationPart(typeof(ServicoController).Assembly)
+    .AddJsonOptions(o =>
+    {
+        o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
 
+builder.Services.Configure<JsonOptions>(o =>
+{
+    // caso use TimeOnly em DTOs
+    o.SerializerOptions.Converters.Add(new TimeOnlyJsonConverter());
+});
+
+builder.Services.AddEndpointsApiExplorer();
+
+// Swagger + Bearer
 builder.Services.AddSwaggerGen(c =>
 {
-    c.MapType<TimeOnly>(() => new Microsoft.OpenApi.Models.OpenApiSchema
+    c.MapType<TimeOnly>(() => new OpenApiSchema
     {
         Type = "string",
         Format = "time",
@@ -43,7 +63,7 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Digite o token JWT no campo abaixo:\n\nExemplo: Bearer {seu token}"
+        Description = "Ex.: Bearer {seu_token}"
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -51,48 +71,28 @@ builder.Services.AddSwaggerGen(c =>
         {
             new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
             },
             Array.Empty<string>()
         }
     });
 });
 
-// Configuração do JSON
-builder.Services.AddControllers().AddJsonOptions(options =>
-    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
-
-// Adicionar Controllers
-builder.Services.AddControllers().AddApplicationPart(typeof(ServicoController).Assembly);
-builder.Services.AddEndpointsApiExplorer();
-
-// Configuração do CORS
+// CORS (inclui 5173)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("MyPolicy", policy =>
-    {
-        policy
-            .WithOrigins("http://localhost:3000", "http://localhost:5173", "http://localhost:5174")
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials();
-    });
-});
-
-// Para APIs
-builder.Services.Configure<JsonOptions>(options =>
-{
-    options.SerializerOptions.Converters.Add(new TimeOnlyJsonConverter());
+    options.AddPolicy("MyPolicy", p =>
+        p.WithOrigins("http://localhost:3000", "http://localhost:5173", "http://localhost:5174")
+         .AllowAnyHeader()
+         .AllowAnyMethod()
+         .AllowCredentials()
+    );
 });
 
 // AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-// Injeção de Dependências
+// DI Repositories
 builder.Services.AddScoped<IServicoRepository, ServicoRepository>();
 builder.Services.AddScoped<IAgendamentoRepository, AgendamentoRepository>();
 builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
@@ -103,7 +103,8 @@ builder.Services.AddScoped<ICategoriaServicoRepository, CategoriaServicoReposito
 builder.Services.AddScoped<IProfissionalRepository, ProfissionalRepository>();
 builder.Services.AddScoped<IProfissionalServicoRepository, ProfissionalServicoRepository>();
 
-builder.Services.AddScoped<JwtService>();
+// DI Services
+builder.Services.AddScoped<JwtService>(); // AkariBeauty.Authentication.JwtService
 builder.Services.AddScoped<IProfissionalServicoService, ProfissionalServicoService>();
 builder.Services.AddScoped<IProfissionalService, ProfissionalService>();
 builder.Services.AddScoped<ICategoriaServicoService, CategoriaServicoService>();
@@ -114,37 +115,50 @@ builder.Services.AddScoped<IServicoService, ServicoService>();
 builder.Services.AddScoped<IAgendamentoService, AgendamentoService>();
 builder.Services.AddScoped<IServicoAgendamentoService, ServicoAgendamentoService>();
 
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(8080); // Porta HTTP
-});
+// Kestrel em 8080 (HTTP)
+builder.WebHost.ConfigureKestrel(o => o.ListenAnyIP(8080));
 
-var jwtSettings = new JwtSettings();
-builder.Configuration.Bind("JwtSettings", jwtSettings);
+// JWT Auth
+var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>()!;
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 
-builder.Services.AddAuthentication(options =>
+builder.Services.AddAuthentication(o =>
 {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-.AddJwtBearer(options =>
+.AddJwtBearer(o =>
 {
-    options.TokenValidationParameters = new TokenValidationParameters
+    o.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-
         ValidIssuer = jwtSettings.Issuer,
         ValidAudience = jwtSettings.Audience,
-        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtSettings.Key))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
+        ClockSkew = TimeSpan.FromMinutes(1)
     };
 });
 
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    try
+    {
+        SchemaBootstrapper.EnsureLatestSchema(dbContext);
+    }
+    catch (Exception ex)
+    {
+        Console.Error.WriteLine($"Falha ao garantir o esquema do banco: {ex.Message}");
+        throw;
+    }
+}
 
 if (app.Environment.IsDevelopment())
 {
@@ -167,7 +181,6 @@ if (app.Environment.IsDevelopment())
             Swashbuckle.AspNetCore.SwaggerUI.SubmitMethod.Patch
         );
     });
-
 }
 else
 {
@@ -177,8 +190,8 @@ else
 
 app.UseStaticFiles();
 app.UseRouting();
-app.UseCors("MyPolicy");
 
+app.UseCors("MyPolicy");  
 app.UseAuthentication();
 app.UseAuthorization();
 

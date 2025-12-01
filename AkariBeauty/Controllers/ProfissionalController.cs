@@ -3,6 +3,7 @@ using AkariBeauty.Objects.Dtos.DataAnnotations.Base;
 using AkariBeauty.Objects.Dtos.Entities;
 using AkariBeauty.Objects.Models;
 using AkariBeauty.Objects.Relationship;
+using AkariBeauty.Objects.Dtos.Profissionais;
 using AkariBeauty.Services.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -182,6 +183,24 @@ namespace AkariBeauty.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, "Erro ao buscar serviços do profissional: " + ex.Message);
+            }
+        }
+
+        [HttpGet("por-servico/{servicoId:int}")]
+        public async Task<IActionResult> GetByServicoId(int servicoId)
+        {
+            try
+            {
+                var profissionais = await _service.GetByServicoId(servicoId);
+                return Ok(profissionais);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro ao buscar profissionais por serviço: " + ex.Message);
             }
         }
 

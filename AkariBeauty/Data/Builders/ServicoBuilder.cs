@@ -39,9 +39,16 @@ namespace AkariBeauty.Data.Builders
 
             modelBuilder.Entity<Servico>().HasData(new List<Servico>
             {
-                new Servico(1, "Corte de Cabelo", "Corte masculino e feminino", 50.00f,1, 1),
-                new Servico(2, "Manicure", "Manicure completa", 30.00f, 1, 1),
-                new Servico(3, "Massagem Relaxante", "Sessão de massagem relaxante", 100.00f, 1, 1),
+                new Servico(1, "Corte Feminino Premium", "Corte personalizado com finalização", 120.00f, 1, 5),
+                new Servico(2, "Manicure Express", "Esmaltação e cuidados rápidos", 45.00f, 1, 4),
+                new Servico(3, "Massagem Relaxante", "Sessão de 60 minutos com óleos essenciais", 160.00f, 6, 7),
+                new Servico(4, "Coloração Completa", "Coloração profissional com tratamento", 280.00f, 4, 5),
+                new Servico(5, "Limpeza de Pele Clássica", "Protocolo completo para revitalização facial", 150.00f, 9, 1),
+                new Servico(6, "Barba Premium", "Design, navalha e hidratação", 80.00f, 8, 9),
+                new Servico(7, "Spa dos Pés", "Esfoliação e hidratação profunda", 95.00f, 6, 4),
+                new Servico(8, "Depilação a Cera Corporal", "Pernas e braços completos", 130.00f, 5, 3),
+                new Servico(9, "Design de Sobrancelhas", "Medição, correção e aplicação de henna", 70.00f, 9, 8),
+                new Servico(10, "Day Spa Corporal", "Esfoliação, massagem e máscara nutritiva", 320.00f, 7, 2)
             });
         }
     }
