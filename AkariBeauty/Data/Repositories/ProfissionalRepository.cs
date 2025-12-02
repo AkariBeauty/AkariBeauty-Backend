@@ -55,4 +55,11 @@ public class ProfissionalRepository : GenericoRepository<Profissional>, IProfiss
 
         return profissionais;
     }
+
+    public async Task<Profissional?> GetWithEmpresaAsync(int profissionalId)
+    {
+        return await _context.Profissionais
+            .Include(p => p.Empresa)
+            .FirstOrDefaultAsync(p => p.Id == profissionalId);
+    }
 }

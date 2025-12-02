@@ -6,6 +6,7 @@ using AutoMapper;
 using AkariBeauty.Authentication;               // JwtService, TokenPayload
 using AkariBeauty.Controllers.Dtos;
 using AkariBeauty.Data.Interfaces;
+using AkariBeauty.Objects.Dtos.Agendamentos;
 using AkariBeauty.Objects.Dtos.Entities;
 using AkariBeauty.Objects.Dtos.Profissionais;
 using AkariBeauty.Objects.Enums;               // TipoUsuario
@@ -21,6 +22,7 @@ namespace AkariBeauty.Services.Entities
         private readonly IProfissionalServicoRepository _profissionalServicoRepository;
         private readonly IServicoRepository _servicoService;
         private readonly IEmpresaRepository _empresaRepository;
+        private readonly IAgendamentoRepository _agendamentoRepository;
         private readonly IMapper _mapper;
         private readonly JwtService _jwtService;
 
@@ -29,6 +31,7 @@ namespace AkariBeauty.Services.Entities
             IServicoRepository servicoRepository,
             IProfissionalServicoRepository profissionalServicoRepository,
             IEmpresaRepository empresaRepository,
+            IAgendamentoRepository agendamentoRepository,
             JwtService jwtService,                      // ✅ injeta via DI
             IMapper mapper
         ) : base(repository, mapper)
@@ -37,6 +40,7 @@ namespace AkariBeauty.Services.Entities
             _servicoService = servicoRepository ?? throw new ArgumentNullException(nameof(servicoRepository));
             _profissionalServicoRepository = profissionalServicoRepository ?? throw new ArgumentNullException(nameof(profissionalServicoRepository));
             _empresaRepository = empresaRepository ?? throw new ArgumentNullException(nameof(empresaRepository));
+            _agendamentoRepository = agendamentoRepository ?? throw new ArgumentNullException(nameof(agendamentoRepository));
             _jwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
@@ -131,6 +135,148 @@ namespace AkariBeauty.Services.Entities
             });
         }
 
+        public async Task<ProfissionalDashboardDTO> GetDashboardAsync(int profissionalId)
+        {
+            var profissional = await _repository.GetById(profissionalId)
+                ?? throw new ArgumentException("Profissional nao encontrado.");
+
+            var hoje = DateOnly.FromDateTime(DateTime.Now);
+            var semanaInicio = GetWeekStart(hoje);
+            var semanaFim = semanaInicio.AddDays(6);
+
+            var agendamentosSemana = await _agendamentoRepository.GetAgendaProfissionalAsync(profissionalId, semanaInicio, semanaFim);
+            var agora = DateTime.Now;
+
+            var pendentesHoje = agendamentosSemana.Count(a => a.Data == hoje && a.StatusAgendamento == StatusAgendamento.PENDENTE);
+            var confirmadosHoje = agendamentosSemana.Count(a => a.Data == hoje && a.StatusAgendamento == StatusAgendamento.CONFIRMADO);
+            var totalSemana = agendamentosSemana.Count(a => a.StatusAgendamento != StatusAgendamento.CANCELADO && a.StatusAgendamento != StatusAgendamento.CANCELADO_EMPRESA);
+            var canceladosSemana = agendamentosSemana.Count(a => a.StatusAgendamento == StatusAgendamento.CANCELADO || a.StatusAgendamento == StatusAgendamento.CANCELADO_EMPRESA);
+
+            var proximos = agendamentosSemana
+                .Where(a => a.Data.ToDateTime(a.Hora) >= agora)
+                .OrderBy(a => a.Data)
+                .ThenBy(a => a.Hora)
+                .Take(5)
+                .Select(MapToAgendaItem)
+                .ToList();
+
+            return new ProfissionalDashboardDTO
+            {
+                Nome = profissional.Nome,
+                PendentesHoje = pendentesHoje,
+                ConfirmadosHoje = confirmadosHoje,
+                TotalSemana = totalSemana,
+                CanceladosSemana = canceladosSemana,
+                Proximos = proximos
+            };
+        }
+
+        public async Task<ProfissionalAgendaDiaDTO> GetAgendaDiaAsync(int profissionalId, DateOnly data)
+        {
+            var itens = await _agendamentoRepository.GetAgendaProfissionalAsync(profissionalId, data, data);
+            return new ProfissionalAgendaDiaDTO
+            {
+                Data = data,
+                Agendamentos = itens.OrderBy(a => a.Hora).Select(MapToAgendaItem)
+            };
+        }
+
+        public async Task<IEnumerable<ProfissionalAgendaDiaDTO>> GetAgendaSemanaAsync(int profissionalId, DateOnly inicioSemana)
+        {
+            var start = GetWeekStart(inicioSemana);
+            var end = start.AddDays(6);
+            var itens = await _agendamentoRepository.GetAgendaProfissionalAsync(profissionalId, start, end);
+
+            return itens
+                .GroupBy(a => a.Data)
+                .OrderBy(g => g.Key)
+                .Select(g => new ProfissionalAgendaDiaDTO
+                {
+                    Data = g.Key,
+                    Agendamentos = g.OrderBy(x => x.Hora).Select(MapToAgendaItem)
+                });
+        }
+
+        public async Task<ProfissionalAgendamentoDetalheDTO> GetAgendamentoDetalheAsync(int profissionalId, int agendamentoId)
+        {
+            var agendamento = await _agendamentoRepository.GetDetalheProfissionalAsync(profissionalId, agendamentoId)
+                ?? throw new ArgumentException("Agendamento nao encontrado para este profissional.");
+
+            return MapToDetalheDto(agendamento);
+        }
+
+        public async Task AtualizarStatusAgendamentoAsync(int profissionalId, int agendamentoId, AtualizarStatusAgendamentoDTO request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            if (!System.Enum.IsDefined(typeof(StatusAgendamento), request.NovoStatus))
+                throw new ArgumentException("Status informado é inválido.");
+
+            var agendamento = await _agendamentoRepository.GetDetalheProfissionalAsync(profissionalId, agendamentoId)
+                ?? throw new ArgumentException("Agendamento nao encontrado para este profissional.");
+
+            if (!PodeTransicionar(agendamento.StatusAgendamento, request.NovoStatus))
+                throw new ArgumentException("Não é possível atualizar o status para o valor informado.");
+
+            agendamento.StatusAgendamento = request.NovoStatus;
+
+            if (!string.IsNullOrWhiteSpace(request.Justificativa))
+            {
+                var anotacao = request.Justificativa!.Trim();
+                agendamento.Observacao = string.IsNullOrWhiteSpace(agendamento.Observacao)
+                    ? anotacao
+                    : $"{agendamento.Observacao}\n{DateTime.Now:dd/MM HH:mm} - {anotacao}";
+            }
+
+            await _agendamentoRepository.SaveChanges();
+        }
+
+        public async Task<ProfissionalPerfilDTO> GetPerfilAsync(int profissionalId)
+        {
+            var profissional = await _repository.GetWithEmpresaAsync(profissionalId)
+                ?? throw new ArgumentException("Profissional nao encontrado.");
+
+            return new ProfissionalPerfilDTO
+            {
+                Id = profissional.Id,
+                Nome = profissional.Nome,
+                Login = profissional.Login,
+                Telefone = profissional.Telefone,
+                EmpresaId = profissional.EmpresaId,
+                EmpresaNome = profissional.Empresa?.RazaoSocial,
+                StatusCodigo = profissional.Status,
+                Status = profissional.Status.ToString()
+            };
+        }
+
+        public async Task AtualizarPerfilAsync(int profissionalId, AtualizarProfissionalPerfilDTO dto)
+        {
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
+
+            var profissional = await _repository.GetById(profissionalId)
+                ?? throw new ArgumentException("Profissional nao encontrado.");
+
+            if (!string.Equals(profissional.Login, dto.Login, StringComparison.OrdinalIgnoreCase))
+            {
+                var existente = await _repository.GetByLogin(dto.Login);
+                if (existente != null && existente.Id != profissionalId)
+                    throw new ArgumentException("Login ja esta sendo utilizado por outro profissional.");
+            }
+
+            profissional.Nome = dto.Nome;
+            profissional.Telefone = dto.Telefone ?? profissional.Telefone;
+            profissional.Login = dto.Login;
+
+            if (!string.IsNullOrWhiteSpace(dto.Senha))
+            {
+                profissional.Senha = dto.Senha!;
+            }
+
+            await _repository.Update(profissional);
+        }
+
         public override async Task<ProfissionalDTO> GetById(int id)
         {
             var profissional = await _repository.GetById(id);
@@ -186,12 +332,64 @@ namespace AkariBeauty.Services.Entities
             return true;
         }
 
-        private static string MapTipoUsuarioToRole(TipoUsuario tipo) => tipo switch
+        private static DateOnly GetWeekStart(DateOnly date)
         {
-            TipoUsuario.PROFISSIONAL => "PROFISSIONAL",
-            TipoUsuario.ADMIN => "ADMIN",
-            TipoUsuario.RECEPCIONISTA => "RECEPCIONISTA",
-            _ => "USUARIO"
-        };
+            var diff = ((int)date.DayOfWeek - (int)DayOfWeek.Monday + 7) % 7;
+            return date.AddDays(-diff);
+        }
+
+        private static ProfissionalAgendaItemDTO MapToAgendaItem(Agendamento agendamento)
+        {
+            var dataHora = agendamento.Data.ToDateTime(agendamento.Hora);
+            return new ProfissionalAgendaItemDTO
+            {
+                Id = agendamento.Id,
+                DataHora = dataHora,
+                ClienteNome = agendamento.Cliente?.Nome ?? $"Cliente #{agendamento.ClienteId}",
+                ClienteTelefone = agendamento.Cliente?.Telefone,
+                ServicoPrincipal = agendamento.Servicos?.FirstOrDefault()?.ServicoPrestado ?? "Serviço",
+                StatusCodigo = agendamento.StatusAgendamento,
+                Status = agendamento.StatusAgendamento.ToString(),
+                Valor = agendamento.Valor,
+                Observacao = agendamento.Observacao,
+                PodeConfirmar = agendamento.StatusAgendamento == StatusAgendamento.PENDENTE,
+                PodeConcluir = agendamento.StatusAgendamento == StatusAgendamento.CONFIRMADO,
+            };
+        }
+
+        private static ProfissionalAgendamentoDetalheDTO MapToDetalheDto(Agendamento agendamento)
+        {
+            var item = MapToAgendaItem(agendamento);
+            return new ProfissionalAgendamentoDetalheDTO
+            {
+                Id = item.Id,
+                DataHora = item.DataHora,
+                ClienteNome = item.ClienteNome,
+                ClienteTelefone = item.ClienteTelefone,
+                ServicoPrincipal = item.ServicoPrincipal,
+                StatusCodigo = item.StatusCodigo,
+                Status = item.Status,
+                Valor = item.Valor,
+                Observacao = item.Observacao,
+                PodeConfirmar = item.PodeConfirmar,
+                PodeConcluir = item.PodeConcluir,
+                ClienteId = agendamento.ClienteId,
+                Servicos = agendamento.Servicos?.Select(s => new ServicoResumoDTO
+                {
+                    Id = s.Id,
+                    Nome = s.ServicoPrestado
+                }) ?? Enumerable.Empty<ServicoResumoDTO>()
+            };
+        }
+
+        private static bool PodeTransicionar(StatusAgendamento atual, StatusAgendamento novo)
+        {
+            return atual switch
+            {
+                StatusAgendamento.PENDENTE => novo is StatusAgendamento.CONFIRMADO or StatusAgendamento.CANCELADO or StatusAgendamento.CANCELADO_EMPRESA,
+                StatusAgendamento.CONFIRMADO => novo is StatusAgendamento.REALIZADO or StatusAgendamento.CANCELADO or StatusAgendamento.AUSENTE,
+                _ => false
+            };
+        }
     }
 }
