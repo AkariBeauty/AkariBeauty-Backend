@@ -1,3 +1,4 @@
+using System;
 using AkariBeauty.Controllers.Dtos;
 using AkariBeauty.Objects.Dtos.DataAnnotations.Base;
 using AkariBeauty.Objects.Dtos.Entities;
@@ -8,6 +9,7 @@ using AkariBeauty.Services.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace AkariBeauty.Controllers
 {
@@ -138,7 +140,7 @@ namespace AkariBeauty.Controllers
             try
             {
                 var token = await _service.Login(request);
-                return Ok(token);
+                return Ok(new { token });
             }
             catch (ArgumentException ex) // For invalid credentials, return Unauthorized
             {
@@ -204,6 +206,178 @@ namespace AkariBeauty.Controllers
             }
         }
 
+        [Authorize(Roles = "Profissional")]
+        [HttpGet("me/dashboard")]
+        public async Task<IActionResult> GetDashboard()
+        {
+            try
+            {
+                var profissionalId = ObterProfissionalId();
+                var resultado = await _service.GetDashboardAsync(profissionalId);
+                return Ok(resultado);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro ao carregar o dashboard: " + ex.Message);
+            }
+        }
+
+        [Authorize(Roles = "Profissional")]
+        [HttpGet("me/agenda-dia")]
+        public async Task<IActionResult> GetAgendaDia([FromQuery] string? data)
+        {
+            try
+            {
+                var profissionalId = ObterProfissionalId();
+                var targetDate = ParseDateOrDefault(data, DateOnly.FromDateTime(DateTime.Now));
+                var resultado = await _service.GetAgendaDiaAsync(profissionalId, targetDate);
+                return Ok(resultado);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro ao carregar a agenda do dia: " + ex.Message);
+            }
+        }
+
+        [Authorize(Roles = "Profissional")]
+        [HttpGet("me/agenda-semana")]
+        public async Task<IActionResult> GetAgendaSemana([FromQuery] string? inicio)
+        {
+            try
+            {
+                var profissionalId = ObterProfissionalId();
+                var start = ParseDateOrDefault(inicio, DateOnly.FromDateTime(DateTime.Now));
+                var resultado = await _service.GetAgendaSemanaAsync(profissionalId, start);
+                return Ok(resultado);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro ao carregar a agenda semanal: " + ex.Message);
+            }
+        }
+
+        [Authorize(Roles = "Profissional")]
+        [HttpGet("me/agendamentos/{agendamentoId:int}")]
+        public async Task<IActionResult> GetAgendamentoDetalhe(int agendamentoId)
+        {
+            try
+            {
+                var profissionalId = ObterProfissionalId();
+                var dto = await _service.GetAgendamentoDetalheAsync(profissionalId, agendamentoId);
+                return Ok(dto);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro ao buscar o agendamento: " + ex.Message);
+            }
+        }
+
+        [Authorize(Roles = "Profissional")]
+        [HttpPatch("me/agendamentos/{agendamentoId:int}/status")]
+        public async Task<IActionResult> AtualizarStatusAgendamento(int agendamentoId, [FromBody] AtualizarStatusAgendamentoDTO body)
+        {
+            try
+            {
+                ExecuteAnnotation.Executar(body);
+                var profissionalId = ObterProfissionalId();
+                await _service.AtualizarStatusAgendamentoAsync(profissionalId, agendamentoId, body);
+                return NoContent();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro ao atualizar o status do agendamento: " + ex.Message);
+            }
+        }
+
+        [Authorize(Roles = "Profissional")]
+        [HttpGet("me/perfil")]
+        public async Task<IActionResult> GetPerfil()
+        {
+            try
+            {
+                var profissionalId = ObterProfissionalId();
+                var dto = await _service.GetPerfilAsync(profissionalId);
+                return Ok(dto);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro ao carregar o perfil do profissional: " + ex.Message);
+            }
+        }
+
+        [Authorize(Roles = "Profissional")]
+        [HttpPut("me/perfil")]
+        public async Task<IActionResult> UpdatePerfil([FromBody] AtualizarProfissionalPerfilDTO body)
+        {
+            try
+            {
+                ExecuteAnnotation.Executar(body);
+                var profissionalId = ObterProfissionalId();
+                await _service.AtualizarPerfilAsync(profissionalId, body);
+                return NoContent();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro ao atualizar o perfil do profissional: " + ex.Message);
+            }
+        }
+
         [HttpDelete("{idProfissional:int}/remove-servico/{idServico:int}")] // Corrected: Removed spaces around :
         public async Task<IActionResult> RemoveServico(int idProfissional, int idServico)
         {
@@ -221,5 +395,20 @@ namespace AkariBeauty.Controllers
                 return StatusCode(500, "Erro ao remover serviço do profissional: " + ex.Message);
             }
         }
+
+        private int ObterProfissionalId()
+        {
+            var claimValue = User.FindFirstValue("profissionalId")
+                              ?? User.FindFirstValue("identifier")
+                              ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(claimValue) || !int.TryParse(claimValue, out var profissionalId))
+                throw new UnauthorizedAccessException("Profissional não identificado no token.");
+
+            return profissionalId;
+        }
+
+        private static DateOnly ParseDateOrDefault(string? value, DateOnly fallback)
+            => DateOnly.TryParse(value, out var parsed) ? parsed : fallback;
     }
 }
