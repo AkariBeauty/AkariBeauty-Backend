@@ -110,6 +110,7 @@ builder.Services.AddScoped<IProfissionalService, ProfissionalService>();
 builder.Services.AddScoped<ICategoriaServicoService, CategoriaServicoService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IEmpresaService, EmpresaService>();
+builder.Services.AddScoped<IEmpresaInsightsService, EmpresaInsightsService>();
 builder.Services.AddScoped<IClienteService, ClienteService>();
 builder.Services.AddScoped<IServicoService, ServicoService>();
 builder.Services.AddScoped<IAgendamentoService, AgendamentoService>();
@@ -191,7 +192,7 @@ else
 app.UseStaticFiles();
 app.UseRouting();
 
-app.UseCors("MyPolicy");  
+app.UseCors("MyPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
