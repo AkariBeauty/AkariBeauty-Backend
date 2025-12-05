@@ -48,7 +48,12 @@ namespace AkariBeauty.Data.Builders
                 new Servico(7, "Spa dos Pés", "Esfoliação e hidratação profunda", 95.00f, 6, 4),
                 new Servico(8, "Depilação a Cera Corporal", "Pernas e braços completos", 130.00f, 5, 3),
                 new Servico(9, "Design de Sobrancelhas", "Medição, correção e aplicação de henna", 70.00f, 9, 8),
-                new Servico(10, "Day Spa Corporal", "Esfoliação, massagem e máscara nutritiva", 320.00f, 7, 2)
+                new Servico(10, "Day Spa Corporal", "Esfoliação, massagem e máscara nutritiva", 320.00f, 7, 2),
+                new Servico(11, "Spa Detox Facial", "Sequência completa de limpeza profunda com máscaras antioxidantes", 210.00f, 1, 1),
+                new Servico(12, "Escova Modelada Premium", "Finalização com escova modelada e proteção térmica", 170.00f, 1, 5),
+                new Servico(13, "Coloração Raiz & Brilho", "Retoque de raiz com selagem e brilho", 320.00f, 1, 5),
+                new Servico(14, "Massagem Relax Express", "Protocolo de 45 minutos focado em ombros e costas", 140.00f, 1, 7),
+                new Servico(15, "Design de Sobrancelhas com Henna", "Mapeamento facial completo com aplicação de henna", 110.00f, 1, 8)
             });
         }
     }

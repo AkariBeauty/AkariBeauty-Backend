@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Security.Claims;
 using AkariBeauty.Controllers.Dtos;
 using AkariBeauty.Objects.Models;
 using AkariBeauty.Services.Interfaces;
@@ -13,10 +13,12 @@ namespace AkariBeauty.Controllers
     public class EmpresaController : Controller
     {
         private readonly IEmpresaService _empresaService;
+        private readonly IEmpresaInsightsService _empresaInsightsService;
 
-        public EmpresaController(IEmpresaService empresaService)
+        public EmpresaController(IEmpresaService empresaService, IEmpresaInsightsService empresaInsightsService)
         {
             this._empresaService = empresaService;
+            _empresaInsightsService = empresaInsightsService;
         }
 
         [HttpGet]
@@ -91,7 +93,7 @@ namespace AkariBeauty.Controllers
             try
             {
                 var token = await _empresaService.Login(request);
-                return Ok( token );
+                return Ok(token);
             }
             catch (ArgumentException ex)
             {
@@ -101,6 +103,158 @@ namespace AkariBeauty.Controllers
             {
                 return StatusCode(500, "Erro ao acessar o servidor: " + ex.Message);
             }
+        }
+
+        [HttpGet("dashboard")]
+        public async Task<IActionResult> Dashboard([FromQuery] int? empresaId = null)
+        {
+            try
+            {
+                var targetId = ResolveEmpresaId(empresaId);
+                var payload = await _empresaInsightsService.GetDashboardAsync(targetId);
+                return Ok(payload);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+        }
+
+        [HttpGet("profissionais")]
+        public async Task<IActionResult> Professionals([FromQuery] int? empresaId = null)
+        {
+            try
+            {
+                var targetId = ResolveEmpresaId(empresaId);
+                var payload = await _empresaInsightsService.GetProfessionalsAsync(targetId);
+                return Ok(payload);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+        }
+
+        [HttpGet("servicos")]
+        public async Task<IActionResult> Services([FromQuery] int? empresaId = null)
+        {
+            try
+            {
+                var targetId = ResolveEmpresaId(empresaId);
+                var payload = await _empresaInsightsService.GetServicesAsync(targetId);
+                return Ok(payload);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+        }
+
+        [HttpGet("agenda")]
+        public async Task<IActionResult> Agenda([FromQuery] DateOnly? inicio = null, [FromQuery] DateOnly? fim = null, [FromQuery] int? empresaId = null)
+        {
+            try
+            {
+                var targetId = ResolveEmpresaId(empresaId);
+                var payload = await _empresaInsightsService.GetAgendaAsync(targetId, inicio, fim);
+                return Ok(payload);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+        }
+
+        [HttpGet("clientes")]
+        public async Task<IActionResult> Clients([FromQuery] int? empresaId = null)
+        {
+            try
+            {
+                var targetId = ResolveEmpresaId(empresaId);
+                var payload = await _empresaInsightsService.GetClientsAsync(targetId);
+                return Ok(payload);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+        }
+
+        [HttpGet("financeiro")]
+        public async Task<IActionResult> Finance([FromQuery] int? empresaId = null)
+        {
+            try
+            {
+                var targetId = ResolveEmpresaId(empresaId);
+                var payload = await _empresaInsightsService.GetFinanceAsync(targetId);
+                return Ok(payload);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+        }
+
+        [HttpGet("config")]
+        [HttpGet("configuracoes")]
+        public async Task<IActionResult> Settings([FromQuery] int? empresaId = null)
+        {
+            try
+            {
+                var targetId = ResolveEmpresaId(empresaId);
+                var payload = await _empresaInsightsService.GetSettingsAsync(targetId);
+                return Ok(payload);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+        }
+
+        [HttpGet("comunicacao")]
+        public async Task<IActionResult> Communication([FromQuery] int? empresaId = null)
+        {
+            try
+            {
+                var targetId = ResolveEmpresaId(empresaId);
+                var payload = await _empresaInsightsService.GetCommunicationAsync(targetId);
+                return Ok(payload);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+        }
+
+        [HttpGet("auditoria")]
+        public async Task<IActionResult> Audit([FromQuery] int? empresaId = null)
+        {
+            try
+            {
+                var targetId = ResolveEmpresaId(empresaId);
+                var payload = await _empresaInsightsService.GetAuditAsync(targetId);
+                return Ok(payload);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+        }
+
+        private int ResolveEmpresaId(int? empresaId)
+        {
+            if (empresaId.HasValue)
+            {
+                return empresaId.Value;
+            }
+
+            var claimValue = User.Claims.FirstOrDefault(c => string.Equals(c.Type, "empresaId", StringComparison.OrdinalIgnoreCase))?.Value;
+            if (int.TryParse(claimValue, out var claimId))
+            {
+                return claimId;
+            }
+
+            throw new InvalidOperationException("Empresa não encontrada no token do usuário");
         }
     }
 }

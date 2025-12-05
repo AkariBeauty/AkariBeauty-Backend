@@ -67,6 +67,16 @@ namespace AkariBeauty.Data.Builders
                 new Agendamento(24, new DateOnly(2025, 12, 3), new TimeOnly(10, 45), 95.00f, 28.50f, StatusAgendamento.CONFIRMADO, 7, 10, null),
                 new Agendamento(25, new DateOnly(2025, 12, 4), new TimeOnly(16, 30), 95.00f, 28.50f, StatusAgendamento.CANCELADO, 8, 10, "Cliente cancelou por viagem."),
                 new Agendamento(26, new DateOnly(2025, 12, 5), new TimeOnly(18, 0), 95.00f, 28.50f, StatusAgendamento.PENDENTE, 9, 10, "Preferência por aromas cítricos."),
+                new Agendamento(30, new DateOnly(2025, 11, 29), new TimeOnly(9, 0), 170.00f, 51.00f, StatusAgendamento.CONFIRMADO, 1, 4, "Cliente pediu finalização lisa."),
+                new Agendamento(31, new DateOnly(2025, 12, 1), new TimeOnly(10, 30), 210.00f, 63.00f, StatusAgendamento.CONFIRMADO, 2, 13, "Aplicar máscara calmante."),
+                new Agendamento(32, new DateOnly(2025, 12, 1), new TimeOnly(14, 0), 320.00f, 95.00f, StatusAgendamento.PENDENTE, 3, 11, "Cliente quer realçar brilho."),
+                new Agendamento(33, new DateOnly(2025, 12, 2), new TimeOnly(9, 45), 45.00f, 12.00f, StatusAgendamento.PENDENTE, 4, 12, "Confirmar disponibilidade até o meio-dia."),
+                new Agendamento(34, new DateOnly(2025, 12, 2), new TimeOnly(16, 30), 170.00f, 51.00f, StatusAgendamento.CONFIRMADO, 5, 4, "Incluiu tratamento antifrizz."),
+                new Agendamento(35, new DateOnly(2025, 12, 3), new TimeOnly(11, 15), 210.00f, 63.00f, StatusAgendamento.REALIZADO, 6, 13, "Cliente retornou para manutenção mensal."),
+                new Agendamento(36, new DateOnly(2025, 12, 4), new TimeOnly(17, 0), 140.00f, 42.00f, StatusAgendamento.CANCELADO, 7, 13, "Remarcado por gripe."),
+                new Agendamento(37, new DateOnly(2025, 12, 5), new TimeOnly(13, 45), 320.00f, 95.00f, StatusAgendamento.CONFIRMADO, 8, 11, "Aplicar tonalização fria."),
+                new Agendamento(38, new DateOnly(2025, 12, 6), new TimeOnly(10, 0), 110.00f, 33.00f, StatusAgendamento.PENDENTE, 9, 13, "Cliente quer novo design de sobrancelhas."),
+                new Agendamento(39, new DateOnly(2025, 12, 6), new TimeOnly(15, 30), 140.00f, 42.00f, StatusAgendamento.CONFIRMADO, 10, 4, "Sessão relax para pós-evento.")
             });
         }
     }

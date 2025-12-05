@@ -30,17 +30,20 @@ public class ProfissionalServicoBuilder
             m.HasData(new List<ProfissionalServico>
             {
                 new ProfissionalServico(4, 1, 0.15f, new TimeOnly(0, 50, 0)),
-                new ProfissionalServico(4, 4, 0.18f, new TimeOnly(1, 30, 0)),
-                new ProfissionalServico(5, 2, 0.12f, new TimeOnly(0, 40, 0)),
-                new ProfissionalServico(5, 8, 0.1f, new TimeOnly(1, 0, 0)),
+                new ProfissionalServico(4, 12, 0.17f, new TimeOnly(1, 5, 0)),
+                new ProfissionalServico(11, 11, 0.16f, new TimeOnly(1, 0, 0)),
+                new ProfissionalServico(11, 13, 0.19f, new TimeOnly(1, 25, 0)),
+                new ProfissionalServico(12, 2, 0.12f, new TimeOnly(0, 40, 0)),
+                new ProfissionalServico(13, 14, 0.14f, new TimeOnly(0, 55, 0)),
+                new ProfissionalServico(13, 15, 0.10f, new TimeOnly(0, 35, 0)),
+                new ProfissionalServico(5, 4, 0.18f, new TimeOnly(1, 30, 0)),
                 new ProfissionalServico(6, 3, 0.15f, new TimeOnly(1, 0, 0)),
-                new ProfissionalServico(6, 10, 0.2f, new TimeOnly(1, 45, 0)),
-                new ProfissionalServico(7, 5, 0.14f, new TimeOnly(1, 10, 0)),
-                new ProfissionalServico(7, 9, 0.1f, new TimeOnly(0, 40, 0)),
+                new ProfissionalServico(6, 7, 0.12f, new TimeOnly(0, 45, 0)),
+                new ProfissionalServico(7, 3, 0.13f, new TimeOnly(1, 10, 0)),
                 new ProfissionalServico(8, 6, 0.12f, new TimeOnly(0, 35, 0)),
-                new ProfissionalServico(8, 1, 0.1f, new TimeOnly(0, 45, 0)),
                 new ProfissionalServico(9, 5, 0.15f, new TimeOnly(1, 15, 0)),
-                new ProfissionalServico(10, 7, 0.12f, new TimeOnly(0, 50, 0))
+                new ProfissionalServico(9, 9, 0.11f, new TimeOnly(0, 40, 0)),
+                new ProfissionalServico(10, 10, 0.16f, new TimeOnly(1, 40, 0))
             });
         });
     }
