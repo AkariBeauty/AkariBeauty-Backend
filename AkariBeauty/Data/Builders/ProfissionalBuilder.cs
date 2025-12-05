@@ -58,7 +58,10 @@ public class ProfissionalBuilder
                 new Profissional(7, "Camila Prado", "44455566677", 3800f, "camila.prado", "senha123", "41999887766", 6, StatusProfissional.ATIVO),
                 new Profissional(8, "Diego Santana", "55566677788", 3100f, "diego.santana", "senha123", "11988776655", 8, StatusProfissional.ATIVO),
                 new Profissional(9, "Elaine Costa", "66677788899", 3600f, "elaine.costa", "senha123", "71977665544", 9, StatusProfissional.ATIVO),
-                new Profissional(10, "Felipe Duarte", "77788899900", 3400f, "felipe.duarte", "senha123", "48966554433", 7, StatusProfissional.ATIVO)
+                new Profissional(10, "Felipe Duarte", "77788899900", 3400f, "felipe.duarte", "senha123", "48966554433", 7, StatusProfissional.ATIVO),
+                new Profissional(11, "Bianca Torres", "88899900011", 4200f, "bianca.torres", "senha123", "11944556677", 1, StatusProfissional.ATIVO),
+                new Profissional(12, "Joao Mendes", "99900011122", 3100f, "joao.mendes", "senha123", "11977889966", 1, StatusProfissional.INATIVO),
+                new Profissional(13, "Sofia Andrade", "55544433322", 3900f, "sofia.andrade", "senha123", "11955667788", 1, StatusProfissional.AFASTADO)
             });
 
         });
